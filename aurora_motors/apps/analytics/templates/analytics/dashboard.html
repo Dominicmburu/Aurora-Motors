@@ -1,0 +1,735 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - {{ SITE_NAME }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.min.css" rel="stylesheet">
+<style>
+.metric-card {
+    transition: transform 0.2s;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+}
+
+.metric-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.trend-up {
+    color: #28a745;
+}
+
+.trend-down {
+    color: #dc3545;
+}
+
+.trend-neutral {
+    color: #6c757d;
+}
+
+.date-filter-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.widget-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.widget-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Analytics Dashboard</h2>
+        <p class="text-muted mb-0">Business insights and performance metrics</p>
+    </div>
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-primary" onclick="exportReport()">
+            <i class="fas fa-download"></i> Export Report
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="refreshDashboard()">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtersModal">
+            <i class="fas fa-filter"></i> Filters
+        </button>
+    </div>
+</div>
+
+<!-- Date Range Filter -->
+<div class="card date-filter-card text-white mb-4">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-1">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    Analytics Period
+                </h5>
+                <p class="mb-0 opacity-75">{{ date_range_display }}</p>
+            </div>
+            <div class="col-md-6">
+                <form method="get" class="row g-2" id="dateRangeForm">
+                    <div class="col-md-5">
+                        <input type="date" class="form-control" name="start_date" value="{{ start_date }}" onchange="this.form.submit()">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="date" class="form-control" name="end_date" value="{{ end_date }}" onchange="this.form.submit()">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="period" onchange="this.form.submit()">
+                            <option value="7" {% if period == '7' %}selected{% endif %}>7 Days</option>
+                            <option value="30" {% if period == '30' %}selected{% endif %}>30 Days</option>
+                            <option value="90" {% if period == '90' %}selected{% endif %}>90 Days</option>
+                            <option value="365" {% if period == '365' %}selected{% endif %}>1 Year</option>
+                            <option value="custom" {% if period == 'custom' %}selected{% endif %}>Custom</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card widget-card metric-card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title opacity-75">Total Revenue</h6>
+                        <h2 class="mb-1">${{ metrics.total_revenue|floatformat:0 }}</h2>
+                        <small class="opacity-75">
+                            {% if metrics.revenue_change >= 0 %}
+                                <i class="fas fa-arrow-up trend-up"></i> +{{ metrics.revenue_change|floatformat:1 }}%
+                            {% else %}
+                                <i class="fas fa-arrow-down trend-down"></i> {{ metrics.revenue_change|floatformat:1 }}%
+                            {% endif %}
+                            vs last period
+                        </small>
+                    </div>
+                    <i class="fas fa-dollar-sign metric-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card widget-card metric-card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title opacity-75">Total Bookings</h6>
+                        <h2 class="mb-1">{{ metrics.total_bookings }}</h2>
+                        <small class="opacity-75">
+                            {% if metrics.bookings_change >= 0 %}
+                                <i class="fas fa-arrow-up trend-up"></i> +{{ metrics.bookings_change|floatformat:1 }}%
+                            {% else %}
+                                <i class="fas fa-arrow-down trend-down"></i> {{ metrics.bookings_change|floatformat:1 }}%
+                            {% endif %}
+                            vs last period
+                        </small>
+                    </div>
+                    <i class="fas fa-calendar-check metric-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card widget-card metric-card bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title opacity-75">New Customers</h6>
+                        <h2 class="mb-1">{{ metrics.new_customers }}</h2>
+                        <small class="opacity-75">
+                            {% if metrics.customers_change >= 0 %}
+                                <i class="fas fa-arrow-up trend-up"></i> +{{ metrics.customers_change|floatformat:1 }}%
+                            {% else %}
+                                <i class="fas fa-arrow-down trend-down"></i> {{ metrics.customers_change|floatformat:1 }}%
+                            {% endif %}
+                            vs last period
+                        </small>
+                    </div>
+                    <i class="fas fa-users metric-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card widget-card metric-card bg-warning text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title opacity-75">Fleet Utilization</h6>
+                        <h2 class="mb-1">{{ metrics.fleet_utilization|floatformat:1 }}%</h2>
+                        <small class="opacity-75">
+                            {% if metrics.utilization_change >= 0 %}
+                                <i class="fas fa-arrow-up trend-up"></i> +{{ metrics.utilization_change|floatformat:1 }}%
+                            {% else %}
+                                <i class="fas fa-arrow-down trend-down"></i> {{ metrics.utilization_change|floatformat:1 }}%
+                            {% endif %}
+                            vs last period
+                        </small>
+                    </div>
+                    <i class="fas fa-car metric-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Metrics -->
+<div class="row mb-4">
+    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+        <div class="card widget-card text-center">
+            <div class="card-body">
+                <h5 class="text-primary">${{ metrics.avg_booking_value|floatformat:0 }}</h5>
+                <small class="text-muted">Avg Booking Value</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+        <div class="card widget-card text-center">
+            <div class="card-body">
+                <h5 class="text-success">{{ metrics.booking_conversion_rate|floatformat:1 }}%</h5>
+                <small class="text-muted">Conversion Rate</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+        <div class="card widget-card text-center">
+            <div class="card-body">
+                <h5 class="text-info">{{ metrics.customer_satisfaction|floatformat:1 }}/5</h5>
+                <small class="text-muted">Customer Rating</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+        <div class="card widget-card text-center">
+            <div class="card-body">
+                <h5 class="text-warning">{{ metrics.repeat_customers|floatformat:1 }}%</h5>
+                <small class="text-muted">Repeat Customers</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+        <div class="card widget-card text-center">
+            <div class="card-body">
+                <h5 class="text-danger">{{ metrics.cancellation_rate|floatformat:1 }}%</h5>
+                <small class="text-muted">Cancellation Rate</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+        <div class="card widget-card text-center">
+            <div class="card-body">
+                <h5 class="text-secondary">{{ metrics.avg_rental_duration|floatformat:1 }}</h5>
+                <small class="text-muted">Avg Days/Rental</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card widget-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Revenue Trend</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="revenueChart" id="daily" checked>
+                    <label class="btn btn-outline-primary" for="daily">Daily</label>
+                    
+                    <input type="radio" class="btn-check" name="revenueChart" id="weekly">
+                    <label class="btn btn-outline-primary" for="weekly">Weekly</label>
+                    
+                    <input type="radio" class="btn-check" name="revenueChart" id="monthly">
+                    <label class="btn btn-outline-primary" for="monthly">Monthly</label>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card widget-card">
+            <div class="card-header">
+                <h5 class="mb-0">Booking Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="bookingStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="card widget-card">
+            <div class="card-header">
+                <h5 class="mb-0">Top Performing Vehicles</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="vehiclePerformanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card widget-card">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Acquisition Channels</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="acquisitionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Data Tables -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card widget-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Bookings</h5>
+                <a href="{% url 'bookings:list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Booking #</th>
+                                <th>Customer</th>
+                                <th>Vehicle</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in recent_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ booking.get_absolute_url }}" class="text-decoration-none">
+                                            {{ booking.booking_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ booking.user.get_full_name }}</td>
+                                    <td>{{ booking.vehicle.brand.name }} {{ booking.vehicle.name }}</td>
+                                    <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                                    <td>${{ booking.total_amount }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'active' %}primary{% else %}secondary{% endif %}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card widget-card">
+            <div class="card-header">
+                <h5 class="mb-0">Top Customers</h5>
+            </div>
+            <div class="card-body">
+                {% for customer in top_customers %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">{{ customer.get_full_name }}</h6>
+                            <small class="text-muted">{{ customer.total_bookings }} booking{{ customer.total_bookings|pluralize }}</small>
+                        </div>
+                        <div class="text-end">
+                            <strong class="text-primary">${{ customer.total_spent|floatformat:0 }}</strong>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts and Notifications -->
+{% if alerts %}
+<div class="row">
+    <div class="col-12">
+        <div class="card widget-card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Alerts & Notifications
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for alert in alerts %}
+                    <div class="alert alert-{{ alert.level }} alert-dismissible fade show" role="alert">
+                        <strong>{{ alert.title }}</strong> {{ alert.message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Filters Modal -->
+<div class="modal fade" id="filtersModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Advanced Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filtersForm">
+                    <div class="mb-3">
+                        <label class="form-label">Vehicle Categories</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="economy" name="categories" value="economy">
+                            <label class="form-check-label" for="economy">Economy</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="compact" name="categories" value="compact">
+                            <label class="form-check-label" for="compact">Compact</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="suv" name="categories" value="suv">
+                            <label class="form-check-label" for="suv">SUV</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="luxury" name="categories" value="luxury">
+                            <label class="form-check-label" for="luxury">Luxury</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Customer Type</label>
+                        <select class="form-select" name="customer_type">
+                            <option value="">All Customers</option>
+                            <option value="new">New Customers</option>
+                            <option value="returning">Returning Customers</option>
+                            <option value="vip">VIP Customers</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Booking Source</label>
+                        <select class="form-select" name="booking_source">
+                            <option value="">All Sources</option>
+                            <option value="website">Website</option>
+                            <option value="mobile_app">Mobile App</option>
+                            <option value="phone">Phone</option>
+                            <option value="partner">Partner</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <select class="form-select" name="location">
+                            <option value="">All Locations</option>
+                            {% for location in locations %}
+                                <option value="{{ location.id }}">{{ location.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.min.js"></script>
+<script>
+let charts = {};
+
+$(document).ready(function() {
+    initializeCharts();
+    setupEventListeners();
+    
+    // Auto-refresh every 5 minutes
+    setInterval(refreshDashboard, 300000);
+});
+
+function initializeCharts() {
+    // Revenue Trend Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    charts.revenue = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: {{ revenue_labels|safe }},
+            datasets: [{
+                label: 'Revenue',
+                data: {{ revenue_data|safe }},
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Booking Status Chart
+    const statusCtx = document.getElementById('bookingStatusChart').getContext('2d');
+    charts.bookingStatus = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ booking_status_labels|safe }},
+            datasets: [{
+                data: {{ booking_status_data|safe }},
+                backgroundColor: [
+                    '#28a745',  // Confirmed
+                    '#ffc107',  // Pending
+                    '#007bff',  // Active
+                    '#17a2b8',  // Completed
+                    '#6c757d'   // Cancelled
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Vehicle Performance Chart
+    const vehicleCtx = document.getElementById('vehiclePerformanceChart').getContext('2d');
+    charts.vehiclePerformance = new Chart(vehicleCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ vehicle_labels|safe }},
+            datasets: [{
+                label: 'Revenue',
+                data: {{ vehicle_revenue_data|safe }},
+                backgroundColor: '#007bff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Customer Acquisition Chart
+    const acquisitionCtx = document.getElementById('acquisitionChart').getContext('2d');
+    charts.acquisition = new Chart(acquisitionCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ acquisition_labels|safe }},
+            datasets: [{
+                data: {{ acquisition_data|safe }},
+                backgroundColor: [
+                    '#007bff',
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545',
+                    '#17a2b8'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function setupEventListeners() {
+    // Revenue chart period toggle
+    $('input[name="revenueChart"]').change(function() {
+        updateRevenueChart($(this).attr('id'));
+    });
+}
+
+function updateRevenueChart(period) {
+    $.get('{% url "analytics:revenue_data" %}', {
+        period: period,
+        start_date: '{{ start_date }}',
+        end_date: '{{ end_date }}'
+    }).done(function(data) {
+        charts.revenue.data.labels = data.labels;
+        charts.revenue.data.datasets[0].data = data.data;
+        charts.revenue.update();
+    });
+}
+
+function refreshDashboard() {
+    // Show loading state
+    $('.metric-card').addClass('opacity-50');
+    
+    $.get(window.location.href, { 
+        ajax: true,
+        start_date: '{{ start_date }}',
+        end_date: '{{ end_date }}'
+    }).done(function(data) {
+        // Update metrics
+        updateMetrics(data.metrics);
+        
+        // Update charts
+        updateCharts(data.charts);
+        
+        // Remove loading state
+        $('.metric-card').removeClass('opacity-50');
+        
+        AuroraMotors.showToast('info', 'Dashboard refreshed');
+    }).fail(function() {
+        $('.metric-card').removeClass('opacity-50');
+        AuroraMotors.showToast('error', 'Failed to refresh dashboard');
+    });
+}
+
+function updateMetrics(metrics) {
+    // Update metric values
+    Object.keys(metrics).forEach(key => {
+        const element = $(`[data-metric="${key}"]`);
+        if (element.length) {
+            element.text(metrics[key]);
+        }
+    });
+}
+
+function updateCharts(chartData) {
+    // Update all charts with new data
+    Object.keys(chartData).forEach(chartName => {
+        if (charts[chartName]) {
+            charts[chartName].data = chartData[chartName];
+            charts[chartName].update();
+        }
+    });
+}
+
+function exportReport() {
+    const params = new URLSearchParams({
+        start_date: '{{ start_date }}',
+        end_date: '{{ end_date }}',
+        format: 'pdf'
+    });
+    
+    window.open(`{% url 'analytics:export' %}?${params}`, '_blank');
+}
+
+function applyFilters() {
+    const formData = $('#filtersForm').serialize();
+    const currentUrl = new URL(window.location);
+    
+    // Add filter parameters to URL
+    const params = new URLSearchParams(formData);
+    params.forEach((value, key) => {
+        currentUrl.searchParams.set(key, value);
+    });
+    
+    // Reload page with filters
+    window.location.href = currentUrl.toString();
+}
+
+// Real-time updates using WebSocket
+if (typeof WebSocket !== 'undefined') {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/analytics/`;
+    
+    try {
+        const socket = new WebSocket(wsUrl);
+        
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'metrics_update') {
+                updateMetrics(data.metrics);
+            }
+        };
+    } catch (error) {
+        console.log('WebSocket connection failed:', error);
+    }
+}
+</script>
+{% endblock %}

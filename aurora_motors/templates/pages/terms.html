@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">Terms of Service</h2>
+                <small class="text-muted">Last updated: {{ terms_last_updated|date:"F d, Y" }}</small>
+            </div>
+            
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Important:</strong> Please read these terms carefully before using our services. 
+                    By creating an account or making a booking, you agree to be bound by these terms.
+                </div>
+                
+                <!-- Table of Contents -->
+                <div class="toc-card bg-light p-3 rounded mb-4">
+                    <h5>Table of Contents</h5>
+                    <ol class="mb-0">
+                        <li><a href="#acceptance">Acceptance of Terms</a></li>
+                        <li><a href="#services">Description of Services</a></li>
+                        <li><a href="#eligibility">Eligibility Requirements</a></li>
+                        <li><a href="#bookings">Booking and Reservations</a></li>
+                        <li><a href="#vehicle-use">Vehicle Use and Restrictions</a></li>
+                        <li><a href="#payment">Payment Terms</a></li>
+                        <li><a href="#insurance">Insurance and Liability</a></li>
+                        <li><a href="#cancellation">Cancellation and Refunds</a></li>
+                        <li><a href="#responsibilities">User Responsibilities</a></li>
+                        <li><a href="#privacy">Privacy and Data Protection</a></li>
+                        <li><a href="#intellectual-property">Intellectual Property</a></li>
+                        <li><a href="#limitation">Limitation of Liability</a></li>
+                        <li><a href="#governing-law">Governing Law</a></li>
+                        <li><a href="#changes">Changes to Terms</a></li>
+                        <li><a href="#contact">Contact Information</a></li>
+                    </ol>
+                </div>
+                
+                <!-- Terms Content -->
+                <div class="terms-content">
+                    <section id="acceptance" class="mb-5">
+                        <h3>1. Acceptance of Terms</h3>
+                        <p>
+                            Welcome to {{ COMPANY_NAME }} ("we," "our," or "us"). These Terms of Service ("Terms") 
+                            govern your use of our car rental services, website, and mobile applications (collectively, the "Service"). 
+                            By accessing or using our Service, you agree to be bound by these Terms.
+                        </p>
+                        <p>
+                            If you disagree with any part of these terms, then you may not access the Service. 
+                            These Terms apply to all visitors, users, and others who access or use the Service.
+                        </p>
+                    </section>
+                    
+                    <section id="services" class="mb-5">
+                        <h3>2. Description of Services</h3>
+                        <p>{{ COMPANY_NAME }} provides car rental services including:</p>
+                        <ul>
+                            <li>Short-term and long-term vehicle rentals</li>
+                            <li>Online booking and reservation management</li>
+                            <li>Vehicle delivery and pickup services</li>
+                            <li>24/7 customer support and roadside assistance</li>
+                            <li>Digital contract signing and document management</li>
+                        </ul>
+                        <p>
+                            Our services are subject to availability and may vary by location. 
+                            We reserve the right to modify, suspend, or discontinue any aspect of our services at any time.
+                        </p>
+                    </section>
+                    
+                    <section id="eligibility" class="mb-5">
+                        <h3>3. Eligibility Requirements</h3>
+                        <p>To use our services, you must:</p>
+                        <ul>
+                            <li>Be at least 21 years of age (25 for luxury vehicles)</li>
+                            <li>Hold a valid driver's license for at least 12 months</li>
+                            <li>Provide a valid credit card in your name</li>
+                            <li>Meet our insurance and credit requirements</li>
+                            <li>Provide accurate and complete information during registration</li>
+                        </ul>
+                        <p>
+                            We reserve the right to verify your eligibility and may request additional documentation. 
+                            Providing false information may result in immediate termination of services.
+                        </p>
+                    </section>
+                    
+                    <section id="bookings" class="mb-5">
+                        <h3>4. Booking and Reservations</h3>
+                        <h5>4.1 Reservation Process</h5>
+                        <p>
+                            All bookings must be made through our website, mobile app, or authorized booking channels. 
+                            A reservation is confirmed only when you receive written confirmation from us.
+                        </p>
+                        
+                        <h5>4.2 Pricing</h5>
+                        <p>
+                            Rental rates are quoted in Australian Dollars and include GST where applicable. 
+                            Prices may vary based on location, vehicle type, rental duration, and seasonal demand. 
+                            Additional fees may apply for optional services, equipment, or policy violations.
+                        </p>
+                        
+                        <h5>4.3 Payment Authorization</h5>
+                        <p>
+                            By making a reservation, you authorize us to charge your payment method for 
+                            the rental amount, applicable taxes, fees, and any additional charges incurred during the rental period.
+                        </p>
+                    </section>
+                    
+                    <section id="vehicle-use" class="mb-5">
+                        <h3>5. Vehicle Use and Restrictions</h3>
+                        <h5>5.1 Permitted Use</h5>
+                        <p>Rental vehicles may only be used for lawful purposes and normal passenger transportation.</p>
+                        
+                        <h5>5.2 Prohibited Activities</h5>
+                        <p>You may NOT use the vehicle for:</p>
+                        <ul>
+                            <li>Commercial purposes or ride-sharing services</li>
+                            <li>Transportation of hazardous materials</li>
+                            <li>Off-road driving or racing</li>
+                            <li>Driving under the influence of alcohol or drugs</li>
+                            <li>Smoking or vaping inside the vehicle</li>
+                            <li>Transportation of pets without prior approval</li>
+                        </ul>
+                        
+                        <h5>5.3 Geographic Restrictions</h5>
+                        <p>
+                            Vehicles must remain within Australia unless specifically authorized. 
+                            Interstate travel may require additional approval and fees.
+                        </p>
+                    </section>
+                    
+                    <section id="payment" class="mb-5">
+                        <h3>6. Payment Terms</h3>
+                        <p>
+                            Payment is due at the time of booking confirmation. We accept major credit cards and debit cards. 
+                            A security deposit will be authorized on your payment method and released after vehicle return, 
+                            subject to inspection and any applicable charges.
+                        </p>
+                        <p>
+                            Late return fees, damage charges, traffic violations, and other penalties will be charged 
+                            to your payment method. You are responsible for all charges incurred during the rental period.
+                        </p>
+                    </section>
+                    
+                    <section id="insurance" class="mb-5">
+                        <h3>7. Insurance and Liability</h3>
+                        <p>
+                            All rental vehicles include basic insurance coverage as required by Australian law. 
+                            Additional coverage options are available for purchase. You are responsible for 
+                            any damage or loss not covered by insurance, up to the vehicle's full value.
+                        </p>
+                        <p>
+                            You agree to report any accidents, damage, or theft immediately to both police 
+                            and our 24/7 support line. Failure to report incidents promptly may void insurance coverage.
+                        </p>
+                    </section>
+                    
+                    <section id="cancellation" class="mb-5">
+                        <h3>8. Cancellation and Refunds</h3>
+                        <ul>
+                            <li><strong>Free Cancellation:</strong> Up to 24 hours before pickup time</li>
+                            <li><strong>Late Cancellation:</strong> 50% of rental fee for cancellations within 24 hours</li>
+                            <li><strong>No-Show:</strong> Full rental fee charged for failure to pickup without notice</li>
+                            <li><strong>Early Return:</strong> No refund for early vehicle return</li>
+                        </ul>
+                        <p>
+                            Refunds are processed to the original payment method within 5-10 business days. 
+                            Processing fees may apply for certain cancellations.
+                        </p>
+                    </section>
+                    
+                    <section id="responsibilities" class="mb-5">
+                        <h3>9. User Responsibilities</h3>
+                        <p>As a renter, you are responsible for:</p>
+                        <ul>
+                            <li>Maintaining a valid driver's license throughout the rental period</li>
+                            <li>Operating the vehicle safely and in compliance with all traffic laws</li>
+                            <li>Keeping the vehicle secure and locked when unattended</li>
+                            <li>Returning the vehicle with the same fuel level as provided</li>
+                            <li>Reporting any mechanical issues or damage immediately</li>
+                            <li>Ensuring all authorized drivers are present during pickup</li>
+                        </ul>
+                    </section>
+                    
+                    <section id="privacy" class="mb-5">
+                        <h3>10. Privacy and Data Protection</h3>
+                        <p>
+                            Your privacy is important to us. Our collection, use, and protection of your personal information 
+                            is governed by our Privacy Policy, which is incorporated into these Terms by reference. 
+                            By using our services, you consent to our data practices as described in our Privacy Policy.
+                        </p>
+                    </section>
+                    
+                    <section id="intellectual-property" class="mb-5">
+                        <h3>11. Intellectual Property</h3>
+                        <p>
+                            The Service and its original content, features, and functionality are and will remain 
+                            the exclusive property of {{ COMPANY_NAME }} and its licensors. The Service is protected 
+                            by copyright, trademark, and other laws. Our trademarks may not be used in connection 
+                            with any product or service without our prior written consent.
+                        </p>
+                    </section>
+                    
+                    <section id="limitation" class="mb-5">
+                        <h3>12. Limitation of Liability</h3>
+                        <p>
+                            To the maximum extent permitted by applicable law, {{ COMPANY_NAME }} shall not be liable 
+                            for any indirect, incidental, special, consequential, or punitive damages, including without 
+                            limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from 
+                            your use of the Service.
+                        </p>
+                    </section>
+                    
+                    <section id="governing-law" class="mb-5">
+                        <h3>13. Governing Law</h3>
+                        <p>
+                            These Terms shall be interpreted and governed by the laws of New South Wales, Australia, 
+                            without regard to its conflict of law provisions. Any disputes arising from these Terms 
+                            will be resolved in the courts of New South Wales.
+                        </p>
+                    </section>
+                    
+                    <section id="changes" class="mb-5">
+                        <h3>14. Changes to Terms</h3>
+                        <p>
+                            We reserve the right to modify or replace these Terms at any time. If a revision is material, 
+                            we will provide at least 30 days notice prior to any new terms taking effect. 
+                            What constitutes a material change will be determined at our sole discretion.
+                        </p>
+                    </section>
+                    
+                    <section id="contact" class="mb-5">
+                        <h3>15. Contact Information</h3>
+                        <p>If you have any questions about these Terms, please contact us:</p>
+                        <ul class="list-unstyled">
+                            <li><strong>Email:</strong> legal@auroramotors.com.au</li>
+                            <li><strong>Phone:</strong> (02) 1234 5678</li>
+                            <li><strong>Address:</strong> 123 Fleet Street, Sydney NSW 2000, Australia</li>
+                        </ul>
+                    </section>
+                </div>
+                
+                <!-- Agreement Acknowledgment -->
+                <div class="alert alert-warning mt-5">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Acknowledgment</h5>
+                    <p class="mb-0">
+                        By using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. 
+                        These terms constitute a legally binding agreement between you and {{ COMPANY_NAME }}.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.terms-content h3 {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+.terms-content h5 {
+    color: #495057;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.toc-card a {
+    text-decoration: none;
+}
+
+.toc-card a:hover {
+    text-decoration: underline;
+}
+
+section {
+    scroll-margin-top: 100px; /* Account for fixed header */
+}
+
+@media print {
+    .card-header, .btn, .alert-info {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Smooth scrolling for internal links
+$(document).ready(function() {
+   $('a[href^="#"]').click(function(e) {
+       e.preventDefault();
+       const target = $(this.getAttribute('href'));
+       if (target.length) {
+           $('html, body').animate({
+               scrollTop: target.offset().top - 100
+           }, 500);
+       }
+   });
+   
+   // Highlight current section in TOC
+   $(window).scroll(function() {
+       let scrollPos = $(document).scrollTop() + 150;
+       $('section[id]').each(function() {
+           let sectionTop = $(this).offset().top;
+           let sectionBottom = sectionTop + $(this).height();
+           let sectionId = $(this).attr('id');
+           
+           if (scrollPos >= sectionTop && scrollPos <= sectionBottom) {
+               $('.toc-card a').removeClass('text-primary fw-bold');
+               $('.toc-card a[href="#' + sectionId + '"]').addClass('text-primary fw-bold');
+           }
+       });
+   });
+});
+
+// Track terms view for analytics
+AuroraMotors.trackEvent('legal', 'terms_viewed', 'terms_of_service');
+</script>
+{% endblock %}

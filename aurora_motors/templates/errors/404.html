@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Page Not Found - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="error-page">
+                <div class="error-code mb-4">
+                    <h1 class="display-1 fw-bold text-primary">404</h1>
+                </div>
+                
+                <div class="error-message mb-4">
+                    <h2 class="h3 mb-3">Oops! Page Not Found</h2>
+                    <p class="text-muted lead">
+                        The page you're looking for doesn't exist or has been moved. 
+                        Don't worry, it happens to the best of us!
+                    </p>
+                </div>
+                
+                <div class="error-illustration mb-4">
+                    <i class="fas fa-car-crash fa-5x text-muted"></i>
+                </div>
+                
+                <div class="error-actions">
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-home"></i> Go Home
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="history.back()">
+                            <i class="fas fa-arrow-left"></i> Go Back
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6>Looking for something specific?</h6>
+                        <div class="row g-2 mt-2">
+                            <div class="col-md-4">
+                                <a href="{% url 'vehicles:search' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-search"></i> Search Vehicles
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{% url 'bookings:list' %}" class="btn btn-outline-success w-100">
+                                    <i class="fas fa-calendar-alt"></i> My Bookings
+                               </a>
+                           </div>
+                           <div class="col-md-4">
+                               <a href="{% url 'contact' %}" class="btn btn-outline-info w-100">
+                                   <i class="fas fa-phone"></i> Contact Us
+                               </a>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               
+               <!-- Search Box -->
+               <div class="mt-5">
+                   <h6>Or try searching:</h6>
+                   <form action="{% url 'vehicles:search' %}" method="get" class="mt-3">
+                       <div class="input-group">
+                           <input type="text" class="form-control" name="q" placeholder="Search for vehicles, locations, or help topics..." autocomplete="off">
+                           <button class="btn btn-primary" type="submit">
+                               <i class="fas fa-search"></i> Search
+                           </button>
+                       </div>
+                   </form>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.error-page {
+   padding: 60px 0;
+}
+
+.error-code h1 {
+   font-size: 8rem;
+   background: linear-gradient(45deg, #007bff, #0056b3);
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   background-clip: text;
+}
+
+.error-illustration {
+   animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+   0%, 100% { transform: translateY(0); }
+   50% { transform: translateY(-10px); }
+}
+
+.btn {
+   transition: transform 0.2s;
+}
+
+.btn:hover {
+   transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Track 404 error for analytics
+AuroraMotors.trackEvent('error', '404', window.location.pathname);
+
+// Auto-focus search input
+$(document).ready(function() {
+   $('input[name="q"]').focus();
+});
+</script>
+{% endblock %}

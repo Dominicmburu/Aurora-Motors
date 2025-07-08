@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Vehicle - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Complete Your Booking</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="bookingForm">
+                    {% csrf_token %}
+                    
+                    <!-- Booking Details -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Pickup Date</label>
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.start_date.errors|first }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Return Date</label>
+                            {{ form.end_date }}
+                            {% if form.end_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.end_date.errors|first }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Pickup Location</label>
+                            {{ form.pickup_location }}
+                            {% if form.pickup_location.errors %}
+                                <div class="invalid-feedback d-block">{{ form.pickup_location.errors|first }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Return Location</label>
+                            {{ form.return_location }}
+                            {% if form.return_location.errors %}
+                                <div class="invalid-feedback d-block">{{ form.return_location.errors|first }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Pickup Time</label>
+                            <select class="form-select" name="pickup_time" required>
+                                <option value="">Select time</option>
+                                {% for hour in pickup_times %}
+                                    <option value="{{ hour }}">{{ hour }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Return Time</label>
+                            <select class="form-select" name="return_time" required>
+                                <option value="">Select time</option>
+                                {% for hour in pickup_times %}
+                                    <option value="{{ hour }}">{{ hour }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Special Requests -->
+                    <div class="mb-4">
+                        <label class="form-label">Special Requests (Optional)</label>
+                        {{ form.special_requests }}
+                        <small class="form-text text-muted">Any additional requirements or requests for your booking</small>
+                    </div>
+                    
+                    <!-- Additional Services -->
+                    <div class="mb-4">
+                        <h5>Additional Services</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="insurance_upgrade" id="insurance_upgrade" data-price="15">
+                                    <label class="form-check-label" for="insurance_upgrade">
+                                        Full Coverage Insurance (+$15/day)
+                                        <small class="text-muted d-block">Zero deductible, comprehensive coverage</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="gps_navigation" id="gps_navigation" data-price="8">
+                                    <label class="form-check-label" for="gps_navigation">
+                                        GPS Navigation (+$8/day)
+                                        <small class="text-muted d-block">Latest mapping and traffic updates</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="child_seat" id="child_seat" data-price="12">
+                                    <label class="form-check-label" for="child_seat">
+                                        Child Safety Seat (+$12/day)
+                                        <small class="text-muted d-block">Age-appropriate safety seats available</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="additional_driver" id="additional_driver" data-price="10">
+                                    <label class="form-check-label" for="additional_driver">
+                                        Additional Driver (+$10/day)
+                                        <small class="text-muted d-block">Add a second authorized driver</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Driver Details -->
+                    <div id="additionalDriverDetails" class="mb-4" style="display: none;">
+                        <h6>Additional Driver Information</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Driver Name</label>
+                                <input type="text" class="form-control" name="additional_driver_name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">License Number</label>
+                                <input type="text" class="form-control" name="additional_driver_license">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="accept_terms" id="accept_terms" required>
+                            <label class="form-check-label" for="accept_terms">
+                                I agree to the <a href="{% url 'terms' %}" target="_blank">Terms and Conditions</a> 
+                                and <a href="{% url 'privacy' %}" target="_blank">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="age_confirmation" id="age_confirmation" required>
+                            <label class="form-check-label" for="age_confirmation">
+                                I confirm that I am at least 21 years old and hold a valid driver's license
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ vehicle.get_absolute_url }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Vehicle
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="proceedToPayment">
+                            <i class="fas fa-credit-card"></i> Proceed to Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Booking Summary Sidebar -->
+    <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header">
+                <h5 class="mb-0">Booking Summary</h5>
+            </div>
+            <div class="card-body">
+                <!-- Vehicle Details -->
+                <div class="d-flex mb-3">
+                    {% if vehicle.images.first %}
+                        <img src="{{ vehicle.images.first.image.url }}" class="rounded me-3" width="80" height="60" style="object-fit: cover;" alt="{{ vehicle.name }}">
+                    {% else %}
+                        <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 60px;">
+                            <i class="fas fa-car text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h6 class="mb-1">{{ vehicle.brand.name }} {{ vehicle.name }}</h6>
+                        <small class="text-muted">{{ vehicle.category.name }}</small>
+                    </div>
+                </div>
+                
+                <!-- Booking Details -->
+                <div class="booking-details mb-3">
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Pickup:</strong></div>
+                        <div class="col-6 text-end" id="pickupDate">-</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Return:</strong></div>
+                        <div class="col-6 text-end" id="returnDate">-</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Duration:</strong></div>
+                        <div class="col-6 text-end" id="duration">-</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Location:</strong></div>
+                        <div class="col-6 text-end" id="location">-</div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Cost Breakdown -->
+                <div class="cost-breakdown">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Base Rate (<span id="daysCount">0</span> days)</span>
+                        <span id="baseRate">$0.00</span>
+                    </div>
+                    
+                    <div id="additionalServices"></div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax (10%)</span>
+                        <span id="tax">$0.00</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between h5 mb-0">
+                        <strong>Total</strong>
+                        <strong id="total" class="text-primary">$0.00</strong>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Contact Information -->
+                <div class="contact-info">
+                    <h6>Contact Information</h6>
+                    <p class="mb-1"><strong>{{ user.get_full_name }}</strong></p>
+                    <p class="mb-1"><small>{{ user.email }}</small></p>
+                    <p class="mb-0"><small>{{ user.profile.phone }}</small></p>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt"></i> 
+                        Secure booking with SSL encryption
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Customer Support -->
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <h6>Need Help?</h6>
+                <p class="mb-2">Our customer support team is here to assist you</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="tel:+611234567890" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-phone"></i> Call
+                    </a>
+                    <a href="mailto:support@auroramotors.com.au" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-envelope"></i> Email
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="openLiveChat()">
+                        <i class="fas fa-comments"></i> Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    const dailyRate = {{ vehicle.daily_rate }};
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    $('input[type="date"]').attr('min', today);
+    
+    // Auto-fill return location with pickup location
+    $('select[name="pickup_location"]').change(function() {
+        $('select[name="return_location"]').val($(this).val());
+        updateBookingSummary();
+    });
+    
+    // Calculate costs when dates change
+    $('input[name="start_date"], input[name="end_date"]').change(function() {
+        updateBookingSummary();
+    });
+    
+    // Show/hide additional driver details
+    $('#additional_driver').change(function() {
+        if ($(this).is(':checked')) {
+            $('#additionalDriverDetails').slideDown();
+        } else {
+            $('#additionalDriverDetails').slideUp();
+        }
+        updateBookingSummary();
+    });
+    
+    // Update costs when additional services change
+    $('input[type="checkbox"][data-price]').change(function() {
+        updateBookingSummary();
+    });
+    
+    // Form validation
+    $('#bookingForm').on('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Show loading state
+        $('#proceedToPayment').html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop('disabled', true);
+    });
+    
+    // Initialize summary
+    updateBookingSummary();
+});
+
+function updateBookingSummary() {
+    const startDate = new Date($('input[name="start_date"]').val());
+    const endDate = new Date($('input[name="end_date"]').val());
+    const pickupLocation = $('select[name="pickup_location"] option:selected').text();
+    
+    if (startDate && endDate && endDate > startDate) {
+        const timeDiff = endDate.getTime() - startDate.getTime();
+        const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        // Update booking details
+        $('#pickupDate').text(startDate.toLocaleDateString());
+        $('#returnDate').text(endDate.toLocaleDateString());
+        $('#duration').text(dayDiff + ' day' + (dayDiff > 1 ? 's' : ''));
+        $('#location').text(pickupLocation || '-');
+        $('#daysCount').text(dayDiff);
+        
+        // Calculate costs
+        const baseRate = dayDiff * {{ vehicle.daily_rate }};
+        $('#baseRate').text('$' + baseRate.toFixed(2));
+        
+        // Calculate additional services
+        let additionalTotal = 0;
+        let additionalHtml = '';
+        
+        $('input[type="checkbox"][data-price]:checked').each(function() {
+            const price = parseFloat($(this).data('price'));
+            const serviceCost = price * dayDiff;
+            additionalTotal += serviceCost;
+            
+            const serviceName = $(this).next('label').text().split('(')[0].trim();
+            additionalHtml += `
+                <div class="d-flex justify-content-between mb-1">
+                    <small>${serviceName}</small>
+                    <small>$${serviceCost.toFixed(2)}</small>
+                </div>
+            `;
+        });
+        
+        $('#additionalServices').html(additionalHtml);
+        
+        const subtotal = baseRate + additionalTotal;
+        const tax = subtotal * 0.1; // 10% tax
+        const total = subtotal + tax;
+        
+        $('#subtotal').text('$' + subtotal.toFixed(2));
+        $('#tax').text('$' + tax.toFixed(2));
+        $('#total').text('$' + total.toFixed(2));
+    } else {
+        // Reset display
+        $('#pickupDate, #returnDate, #duration, #location').text('-');
+        $('#daysCount').text('0');
+        $('#baseRate, #subtotal, #tax, #total').text('$0.00');
+        $('#additionalServices').html('');
+    }
+}
+
+function validateForm() {
+    let isValid = true;
+    const startDate = new Date($('input[name="start_date"]').val());
+    const endDate = new Date($('input[name="end_date"]').val());
+    const today = new Date();
+    
+    // Reset previous errors
+    $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').remove();
+    
+    // Date validations
+    if (!startDate || startDate < today) {
+        showFieldError('input[name="start_date"]', 'Pickup date must be today or later');
+        isValid = false;
+    }
+    
+    if (!endDate || endDate <= startDate) {
+        showFieldError('input[name="end_date"]', 'Return date must be after pickup date');
+        isValid = false;
+    }
+    
+    // Location validations
+    if (!$('select[name="pickup_location"]').val()) {
+        showFieldError('select[name="pickup_location"]', 'Please select a pickup location');
+        isValid = false;
+    }
+    
+    if (!$('select[name="return_location"]').val()) {
+        showFieldError('select[name="return_location"]', 'Please select a return location');
+        isValid = false;
+    }
+    
+    // Time validations
+    if (!$('select[name="pickup_time"]').val()) {
+        showFieldError('select[name="pickup_time"]', 'Please select a pickup time');
+        isValid = false;
+    }
+    
+    if (!$('select[name="return_time"]').val()) {
+        showFieldError('select[name="return_time"]', 'Please select a return time');
+        isValid = false;
+    }
+    
+    // Additional driver validation
+    if ($('#additional_driver').is(':checked')) {
+        if (!$('input[name="additional_driver_name"]').val()) {
+            showFieldError('input[name="additional_driver_name"]', 'Driver name is required');
+            isValid = false;
+        }
+        
+        if (!$('input[name="additional_driver_license"]').val()) {
+            showFieldError('input[name="additional_driver_license"]', 'License number is required');
+            isValid = false;
+        }
+    }
+    
+    // Terms validation
+    if (!$('#accept_terms').is(':checked')) {
+        showFieldError('#accept_terms', 'You must accept the terms and conditions');
+        isValid = false;
+    }
+    
+    if (!$('#age_confirmation').is(':checked')) {
+        showFieldError('#age_confirmation', 'You must confirm your age and license validity');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function showFieldError(fieldSelector, message) {
+    const field = $(fieldSelector);
+    field.addClass('is-invalid');
+    field.after(`<div class="invalid-feedback">${message}</div>`);
+}
+
+function openLiveChat() {
+    // Integration with live chat system
+    if (typeof Intercom !== 'undefined') {
+        Intercom('show');
+    } else {
+        AuroraMotors.showToast('info', 'Live chat will be available soon. Please use phone or email for now.');
+    }
+}
+</script>
+{% endblock %}

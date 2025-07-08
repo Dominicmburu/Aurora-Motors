@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Contracts - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>My Contracts</h2>
+        <p class="text-muted mb-0">Digital contract management</p>
+    </div>
+    {% if user.is_staff %}
+        <a href="{% url 'contracts:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Contract
+        </a>
+    {% endif %}
+</div>
+
+<!-- Contract Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending Signature</option>
+                    <option value="signed" {% if request.GET.status == 'signed' %}selected{% endif %}>Signed</option>
+                    <option value="expired" {% if request.GET.status == 'expired' %}selected{% endif %}>Expired</option>
+                    <option value="voided" {% if request.GET.status == 'voided' %}selected{% endif %}>Voided</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" name="date_from" placeholder="From Date" value="{{ request.GET.date_from }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" name="date_to" placeholder="To Date" value="{{ request.GET.date_to }}">
+            </div>
+            <div class="col-md-3">
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if contracts %}
+    <div class="row g-4">
+        {% for contract in contracts %}
+            <div class="col-lg-6">
+                <div class="card contract-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">{{ contract.contract_number }}</h6>
+                            <small class="text-muted">{{ contract.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <span class="badge bg-{% if contract.is_signed %}success{% elif contract.is_expired %}danger{% elif contract.status == 'voided' %}secondary{% else %}warning{% endif %}">
+                            {{ contract.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <div class="contract-icon me-3">
+                                <i class="fas fa-file-contract fa-2x text-{% if contract.is_signed %}success{% elif contract.is_expired %}danger{% else %}warning{% endif %}"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Car Rental Agreement</h6>
+                                <p class="text-muted mb-1">{{ contract.booking.vehicle.brand.name }} {{ contract.booking.vehicle.name }}</p>
+                                <small class="text-muted">Booking: {{ contract.booking.booking_number }}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="contract-details">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Customer:</strong><br>
+                                    <small>{{ contract.booking.user.get_full_name }}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Amount:</strong><br>
+                                    <small class="text-primary">${{ contract.booking.total_amount }}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Rental Period:</strong><br>
+                                    <small>{{ contract.booking.start_date|date:"M d" }} - {{ contract.booking.end_date|date:"M d, Y" }}</small>
+                                </div>
+                                <div class="col-6">
+                                    {% if contract.is_signed %}
+                                        <strong>Signed:</strong><br>
+                                        <small>{{ contract.signed_at|date:"M d, Y" }}</small>
+                                    {% elif contract.is_expired %}
+                                        <strong>Expired:</strong><br>
+                                        <small class="text-danger">{{ contract.expires_at|date:"M d, Y" }}</small>
+                                    {% else %}
+                                        <strong>Expires:</strong><br>
+                                        <small class="text-warning">{{ contract.expires_at|date:"M d, Y" }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Indicator -->
+                            {% if not contract.is_signed and not contract.is_expired %}
+                                <div class="progress mb-3" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: {{ contract.progress_percentage }}%"></div>
+                                </div>
+                                <small class="text-muted">{{ contract.progress_percentage }}% complete</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group" role="group">
+                                <a href="{{ contract.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                
+                                {% if contract.is_signed %}
+                                    <a href="{% url 'contracts:download' contract.id %}" class="btn btn-sm btn-success">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                {% elif not contract.is_expired %}
+                                    <a href="{% url 'contracts:sign' contract.id %}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-file-signature"></i> Sign
+                                    </a>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'contracts:download_pdf' contract.id %}">
+                                            <i class="fas fa-file-pdf"></i> Download PDF
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'contracts:print' contract.id %}" target="_blank">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </li>
+                                    {% if user.is_staff %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        {% if not contract.is_signed %}
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="sendReminder('{{ contract.id }}')">
+                                                    <i class="fas fa-bell"></i> Send Reminder
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if contract.can_be_voided %}
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#" onclick="voidContract('{{ contract.id }}')">
+                                                    <i class="fas fa-ban"></i> Void Contract
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% include 'includes/pagination.html' %}
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-file-contract fa-4x text-muted mb-4"></i>
+        <h4>No contracts found</h4>
+        <p class="text-muted mb-4">Your signed contracts will appear here.</p>
+        <a href="{% url 'vehicles:search' %}" class="btn btn-primary">
+            <i class="fas fa-car"></i> Make a Booking
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function sendReminder(contractId) {
+    $.post(`/contracts/${contractId}/send-reminder/`, {
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    }).done(function(data) {
+        if (data.success) {
+            AuroraMotors.showToast('success', 'Reminder sent successfully');
+        } else {
+            AuroraMotors.showToast('error', data.message || 'Failed to send reminder');
+        }
+    });
+}
+
+function voidContract(contractId) {
+    if (confirm('Are you sure you want to void this contract? This action cannot be undone.')) {
+        const reason = prompt('Please provide a reason for voiding this contract:');
+        if (reason) {
+            $.post(`/contracts/${contractId}/void/`, {
+                'reason': reason,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }).done(function(data) {
+                if (data.success) {
+                    AuroraMotors.showToast('success', 'Contract voided successfully');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    AuroraMotors.showToast('error', data.message || 'Failed to void contract');
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

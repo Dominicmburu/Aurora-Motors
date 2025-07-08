@@ -1,0 +1,68 @@
+<footer class="bg-dark text-light mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>{{ COMPANY_NAME }}</h5>
+                <p>Premium car rental service providing quality vehicles across Australia.</p>
+                <div class="social-links">
+                    {% if site_settings.facebook_url %}
+                        <a href="{{ site_settings.facebook_url }}" class="text-light me-3"><i class="fab fa-facebook"></i></a>
+                    {% endif %}
+                    {% if site_settings.twitter_url %}
+                        <a href="{{ site_settings.twitter_url }}" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                    {% endif %}
+                    {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                    {% endif %}
+                    {% if site_settings.linkedin_url %}
+                        <a href="{{ site_settings.linkedin_url }}" class="text-light me-3"><i class="fab fa-linkedin"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <h6>Company</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'about' %}" class="text-light text-decoration-none">About Us</a></li>
+                    <li><a href="{% url 'contact' %}" class="text-light text-decoration-none">Contact</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Careers</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Press</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <h6>Services</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'vehicles:list' %}" class="text-light text-decoration-none">Vehicle Rental</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Long Term Rental</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Corporate Rental</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Airport Pickup</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <h6>Support</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light text-decoration-none">Help Center</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Safety</a></li>
+                    <li><a href="{% url 'terms' %}" class="text-light text-decoration-none">Terms</a></li>
+                    <li><a href="{% url 'privacy' %}" class="text-light text-decoration-none">Privacy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <h6>Contact Info</h6>
+                <ul class="list-unstyled small">
+                    <li><i class="fas fa-phone"></i> {{ site_settings.company_phone }}</li>
+                    <li><i class="fas fa-envelope"></i> {{ site_settings.company_email }}</li>
+                    <li><i class="fas fa-map-marker-alt"></i> {{ site_settings.company_address }}</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; {% now "Y" %} {{ COMPANY_NAME }}. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <small class="text-muted">Built with Django & Bootstrap</small>
+            </div>
+        </div>
+    </div>
+</footer>

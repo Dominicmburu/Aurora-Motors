@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Vehicles - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="search-hero bg-primary text-white py-5 mb-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">Find Your Perfect Vehicle</h1>
+                <p class="lead">Search through our premium fleet and find the ideal car for your journey</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Advanced Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" id="searchForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Pickup Date</label>
+                        <input type="date" class="form-control" name="pickup_date" value="{{ request.GET.pickup_date }}" required>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label">Return Date</label>
+                        <input type="date" class="form-control" name="return_date" value="{{ request.GET.return_date }}" required>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Pickup Location</label>
+                        <select class="form-select" name="pickup_location">
+                            <option value="">Select Location</option>
+                            {% for location in locations %}
+                                <option value="{{ location.id }}" {% if request.GET.pickup_location == location.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ location.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Advanced Filters (Collapsible) -->
+                <div class="collapse mt-3" id="advancedFilters">
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Brand</label>
+                            <select class="form-select" name="brand">
+                                <option value="">All Brands</option>
+                                {% for brand in brands %}
+                                    <option value="{{ brand.id }}" {% if request.GET.brand == brand.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ brand.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Transmission</label>
+                            <select class="form-select" name="transmission">
+                                <option value="">Any</option>
+                                <option value="automatic" {% if request.GET.transmission == 'automatic' %}selected{% endif %}>Automatic</option>
+                                <option value="manual" {% if request.GET.transmission == 'manual' %}selected{% endif %}>Manual</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Fuel Type</label>
+                            <select class="form-select" name="fuel_type">
+                                <option value="">Any</option>
+                                <option value="petrol" {% if request.GET.fuel_type == 'petrol' %}selected{% endif %}>Petrol</option>
+                                <option value="diesel" {% if request.GET.fuel_type == 'diesel' %}selected{% endif %}>Diesel</option>
+                                <option value="hybrid" {% if request.GET.fuel_type == 'hybrid' %}selected{% endif %}>Hybrid</option>
+                                <option value="electric" {% if request.GET.fuel_type == 'electric' %}selected{% endif %}>Electric</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Min Seats</label>
+                            <select class="form-select" name="min_seats">
+                                <option value="">Any</option>
+                                <option value="2" {% if request.GET.min_seats == '2' %}selected{% endif %}>2+</option>
+                                <option value="4" {% if request.GET.min_seats == '4' %}selected{% endif %}>4+</option>
+                                <option value="5" {% if request.GET.min_seats == '5' %}selected{% endif %}>5+</option>
+                                <option value="7" {% if request.GET.min_seats == '7' %}selected{% endif %}>7+</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Max Price (per day)</label>
+                            <input type="number" class="form-control" name="max_price" placeholder="Maximum price" value="{{ request.GET.max_price }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Features</label>
+                            <div class="row">
+                                {% for feature in popular_features %}
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="features" value="{{ feature.id }}" 
+                                                   {% if feature.id|stringformat:"s" in request.GET.getlist:'features' %}checked{% endif %}>
+                                            <label class="form-check-label">{{ feature.name }}</label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                        <i class="fas fa-filter"></i> Advanced Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Search Results -->
+    {% if vehicles %}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4>Search Results</h4>
+                <p class="text-muted mb-0">Found {{ vehicles.count }} vehicles for your search</p>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3">
+                <select class="form-select" name="sort_by" onchange="updateSort(this.value)" style="width: auto;">
+                    <option value="">Sort by</option>
+                    <option value="price_low" {% if request.GET.sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if request.GET.sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="name" {% if request.GET.sort_by == 'name' %}selected{% endif %}>Name: A to Z</option>
+                    <option value="rating" {% if request.GET.sort_by == 'rating' %}selected{% endif %}>Highest Rated</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for vehicle in vehicles %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card vehicle-card h-100">
+                        <div class="position-relative">
+                            {% if vehicle.images.first %}
+                                <img src="{{ vehicle.images.first.image.url }}" class="card-img-top" alt="{{ vehicle.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-car text-muted fa-3x"></i>
+                                </div>
+                            {% endif %}
+                            
+                            {% if vehicle.availability_for_dates %}
+                                <span class="badge bg-success position-absolute top-0 start-0 m-2">Available</span>
+                            {% else %}
+                                <span class="badge bg-warning position-absolute top-0 start-0 m-2">Limited</span>
+                            {% endif %}
+                            
+                            <div class="card-img-overlay p-2">
+                                <button class="btn btn-sm btn-outline-light float-end" onclick="addToWishlist({{ vehicle.id }})">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vehicle.brand.name }} {{ vehicle.name }}</h5>
+                            <p class="text-muted small">{{ vehicle.category.name }} • {{ vehicle.year }}</p>
+                            
+                            <div class="vehicle-specs mb-3">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <i class="fas fa-users text-muted"></i>
+                                        <small class="d-block">{{ vehicle.seats }}</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="fas fa-cog text-muted"></i>
+                                        <small class="d-block">{{ vehicle.get_transmission_display }}</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="fas fa-gas-pump text-muted"></i>
+                                        <small class="d-block">{{ vehicle.get_fuel_type_display }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if vehicle.average_rating %}
+                                <div class="mb-2">
+                                    <div class="d-flex align-items-center">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= vehicle.average_rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <small class="text-muted ms-2">({{ vehicle.total_reviews }})</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="text-primary mb-0">${{ vehicle.daily_rate }}</h5>
+                                    <small class="text-muted">per day</small>
+                                </div>
+                                <div>
+                                    <a href="{{ vehicle.get_absolute_url }}" class="btn btn-outline-primary btn-sm me-1">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'bookings:create' %}?vehicle={{ vehicle.id }}&pickup_date={{ request.GET.pickup_date }}&return_date={{ request.GET.return_date }}&pickup_location={{ request.GET.pickup_location }}" 
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-calendar-plus"></i> Book
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% include 'includes/pagination.html' %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-4x text-muted mb-4"></i>
+            <h4>No vehicles found</h4>
+            <p class="text-muted mb-4">Try adjusting your search criteria or dates.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <button type="button" class="btn btn-outline-primary" onclick="clearFilters()">
+                    <i class="fas fa-refresh"></i> Clear Filters
+                </button>
+                <a href="{% url 'vehicles:list' %}" class="btn btn-primary">
+                    <i class="fas fa-car"></i> Browse All Vehicles
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    $('input[type="date"]').attr('min', today);
+    
+    // Auto-set return date when pickup date changes
+    $('input[name="pickup_date"]').change(function() {
+        const pickupDate = new Date($(this).val());
+        const returnDate = new Date(pickupDate);
+        returnDate.setDate(returnDate.getDate() + 1);
+        
+        const returnInput = $('input[name="return_date"]');
+        if (!returnInput.val() || new Date(returnInput.val()) <= pickupDate) {
+            returnInput.val(returnDate.toISOString().split('T')[0]);
+        }
+        
+        returnInput.attr('min', returnDate.toISOString().split('T')[0]);
+    });
+    
+    // Trigger initial pickup date change if date is already set
+    if ($('input[name="pickup_date"]').val()) {
+        $('input[name="pickup_date"]').trigger('change');
+    }
+});
+
+function updateSort(sortValue) {
+    const url = new URL(window.location);
+    if (sortValue) {
+        url.searchParams.set('sort_by', sortValue);
+    } else {
+        url.searchParams.delete('sort_by');
+    }
+    window.location.href = url.toString();
+}
+
+function clearFilters() {
+    // Keep only the essential search parameters
+    const url = new URL(window.location);
+    const pickupDate = url.searchParams.get('pickup_date');
+    const returnDate = url.searchParams.get('return_date');
+    const pickupLocation = url.searchParams.get('pickup_location');
+    
+    // Clear all parameters
+    url.search = '';
+    
+    // Restore essential parameters
+    if (pickupDate) url.searchParams.set('pickup_date', pickupDate);
+    if (returnDate) url.searchParams.set('return_date', returnDate);
+    if (pickupLocation) url.searchParams.set('pickup_location', pickupLocation);
+    
+    window.location.href = url.toString();
+}
+
+function addToWishlist(vehicleId) {
+    {% if user.is_authenticated %}
+        $.post('{% url "vehicles:add_to_wishlist" %}', {
+            'vehicle_id': vehicleId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        }).done(function(data) {
+            if (data.success) {
+                AuroraMotors.showToast('success', 'Vehicle added to wishlist!');
+            }
+        });
+    {% else %}
+        window.location.href = '{% url "accounts:login" %}?next={{ request.path }}';
+    {% endif %}
+}
+</script>
+{% endblock %}

@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>My Bookings</h2>
+        <p class="text-muted mb-0">Manage your vehicle reservations</p>
+    </div>
+    <a href="{% url 'vehicles:search' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> New Booking
+    </a>
+</div>
+
+<!-- Booking Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" name="start_date" placeholder="From Date" value="{{ request.GET.start_date }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" name="end_date" placeholder="To Date" value="{{ request.GET.end_date }}">
+            </div>
+            <div class="col-md-3">
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if bookings %}
+    <div class="row g-4">
+        {% for booking in bookings %}
+            <div class="col-lg-6">
+                <div class="card booking-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">{{ booking.booking_number }}</h6>
+                            <small class="text-muted">{{ booking.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'active' %}primary{% elif booking.status == 'completed' %}info{% else %}secondary{% endif %}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            {% if booking.vehicle.images.first %}
+                                <img src="{{ booking.vehicle.images.first.image.url }}" class="rounded me-3" width="80" height="60" style="object-fit: cover;" alt="{{ booking.vehicle.name }}">
+                            {% else %}
+                                <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 60px;">
+                                    <i class="fas fa-car text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ booking.vehicle.brand.name }} {{ booking.vehicle.name }}</h6>
+                                <small class="text-muted">{{ booking.vehicle.category.name }}</small>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="text-primary mb-0">${{ booking.total_amount }}</h6>
+                                <small class="text-muted">Total</small>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-details">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Pickup:</strong><br>
+                                    <small>{{ booking.start_date|date:"M d, Y" }}</small><br>
+                                    <small class="text-muted">{{ booking.pickup_location.name }}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Return:</strong><br>
+                                    <small>{{ booking.end_date|date:"M d, Y" }}</small><br>
+                                    <small class="text-muted">{{ booking.return_location.name }}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Duration:</small>
+                                    <strong>{{ booking.total_days }} day{{ booking.total_days|pluralize }}</strong>
+                                </div>
+                                <div class="col-6">
+                                    {% if booking.is_overdue %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                    {% elif booking.starts_today %}
+                                        <span class="badge bg-warning">Starts Today</span>
+                                    {% elif booking.ends_today %}
+                                        <span class="badge bg-info">Ends Today</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group" role="group">
+                                <a href="{{ booking.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if booking.can_be_modified %}
+                                    <a href="{% url 'bookings:modify' booking.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> Modify
+                                    </a>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="btn-group" role="group">
+                                {% if booking.status == 'confirmed' and booking.can_be_cancelled %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="cancelBooking('{{ booking.id }}')">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                {% endif %}
+                                
+                                {% if booking.status == 'completed' %}
+                                    <a href="{% url 'bookings:review' booking.id %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-star"></i> Review
+                                    </a>
+                                {% endif %}
+                                
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{% url 'bookings:download_invoice' booking.id %}">
+                                            <i class="fas fa-download"></i> Download Invoice
+                                        </a></li>
+                                        {% if booking.contract %}
+                                            <li><a class="dropdown-item" href="{{ booking.contract.get_absolute_url }}">
+                                                <i class="fas fa-file-contract"></i> View Contract
+                                            </a></li>
+                                        {% endif %}
+                                        <li><a class="dropdown-item" href="{% url 'bookings:duplicate' booking.id %}">
+                                            <i class="fas fa-copy"></i> Book Again
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% include 'includes/pagination.html' %}
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-calendar-times fa-4x text-muted mb-4"></i>
+       <h4>No bookings found</h4>
+       <p class="text-muted mb-4">You haven't made any bookings yet. Start exploring our vehicle collection!</p>
+       <a href="{% url 'vehicles:search' %}" class="btn btn-primary btn-lg">
+           <i class="fas fa-search"></i> Search Vehicles
+       </a>
+   </div>
+{% endif %}
+
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <h5 class="modal-title">Cancel Booking</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+           </div>
+           <div class="modal-body">
+               <div class="alert alert-warning">
+                   <i class="fas fa-exclamation-triangle"></i>
+                   <strong>Are you sure you want to cancel this booking?</strong>
+               </div>
+               <p>This action cannot be undone. Please review our cancellation policy:</p>
+               <ul>
+                   <li>Free cancellation up to 24 hours before pickup</li>
+                   <li>50% refund for cancellations within 24 hours</li>
+                   <li>No refund for no-shows</li>
+               </ul>
+               
+               <div class="mb-3">
+                   <label class="form-label">Reason for cancellation (Optional)</label>
+                   <textarea class="form-control" id="cancellationReason" rows="3" placeholder="Please let us know why you're cancelling..."></textarea>
+               </div>
+           </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
+               <button type="button" class="btn btn-danger" id="confirmCancel">
+                   <i class="fas fa-times"></i> Cancel Booking
+               </button>
+           </div>
+       </div>
+   </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let bookingToCancel = null;
+
+function cancelBooking(bookingId) {
+   bookingToCancel = bookingId;
+   $('#cancelModal').modal('show');
+}
+
+$('#confirmCancel').click(function() {
+   if (bookingToCancel) {
+       const reason = $('#cancellationReason').val();
+       
+       $(this).html('<i class="fas fa-spinner fa-spin"></i> Cancelling...').prop('disabled', true);
+       
+       $.post('{% url "bookings:cancel" %}', {
+           'booking_id': bookingToCancel,
+           'reason': reason,
+           'csrfmiddlewaretoken': '{{ csrf_token }}'
+       }).done(function(data) {
+           if (data.success) {
+               $('#cancelModal').modal('hide');
+               AuroraMotors.showToast('success', 'Booking cancelled successfully');
+               setTimeout(() => location.reload(), 1500);
+           } else {
+               AuroraMotors.showToast('error', data.message || 'Failed to cancel booking');
+           }
+       }).fail(function() {
+           AuroraMotors.showToast('error', 'An error occurred. Please try again.');
+       }).always(function() {
+           $('#confirmCancel').html('<i class="fas fa-times"></i> Cancel Booking').prop('disabled', false);
+       });
+   }
+});
+
+$(document).ready(function() {
+   // Auto-submit form when filters change
+   $('select[name="status"]').change(function() {
+       $(this).closest('form').submit();
+   });
+});
+</script>
+{% endblock %}

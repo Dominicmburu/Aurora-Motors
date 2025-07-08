@@ -1,0 +1,2749 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ SITE_NAME }} - Premium Car Rental Service{% endblock %}
+
+{% block extra_css %}
+{% comment %} <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"> {% endcomment %}
+{% comment %} <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet"> {% endcomment %}
+<style>
+/* Custom Properties */
+:root {
+    --primary-color: #1e3c72;
+    --secondary-color: #2a5298;
+    --accent-color: #ffc107;
+    --accent-dark: #ffb300;
+    --success-color: #28a745;
+    --warning-color: #fd7e14;
+    --danger-color: #dc3545;
+    --text-dark: #212529;
+    --text-light: #6c757d;
+    --bg-light: #f8f9fa;
+    --white: #ffffff;
+    --shadow-light: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.15);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    --gradient-accent: linear-gradient(45deg, var(--accent-color), var(--accent-dark));
+    --border-radius: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hero Section with Video Background */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--gradient-primary);
+}
+
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0.3;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(30, 60, 114, 0.8);
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+}
+
+.hero-badge {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.8s ease-out;
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: var(--white);
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-title .highlight {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 32px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+    max-width: 600px;
+}
+
+.hero-buttons {
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+    background: var(--gradient-accent);
+    border: none;
+    color: var(--text-dark);
+    font-weight: 700;
+    padding: 18px 36px;
+    font-size: 16px;
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hero-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-hero-primary:hover::before {
+    left: 100%;
+}
+
+.btn-hero-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(255, 193, 7, 0.4);
+    color: var(--text-dark);
+}
+
+.btn-hero-secondary {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: var(--white);
+    font-weight: 600;
+    padding: 16px 34px;
+    font-size: 16px;
+    border-radius: 50px;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+.btn-hero-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--white);
+    color: var(--white);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Search Card Enhancement */
+.search-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+    border: none;
+    animation: slideInRight 0.8s ease-out 0.8s both;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-accent);
+}
+
+.search-card .card-body {
+    padding: 48px;
+}
+
+.search-card-title {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 1.75rem;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+}
+
+.search-card-title i {
+    margin-right: 12px;
+    color: var(--accent-color);
+}
+
+/* Enhanced Form Controls */
+.form-floating {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-floating > .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 24px 20px;
+    font-size: 16px;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.form-floating > .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    transform: translateY(-2px);
+}
+
+.form-floating > label {
+    color: var(--text-light);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.btn-search {
+    background: var(--gradient-primary);
+    border: none;
+    color: var(--white);
+    font-weight: 700;
+    padding: 20px;
+    font-size: 18px;
+    border-radius: 16px;
+    width: 100%;
+    margin-top: 16px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-search::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-search:hover::before {
+    left: 100%;
+}
+
+.btn-search:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(30, 60, 114, 0.4);
+    color: var(--white);
+}
+
+/* Popular Locations Enhancement */
+.popular-locations {
+    margin-top: 24px;
+}
+
+.location-tag {
+    border: 1px solid #e9ecef;
+    background: var(--white);
+    color: var(--text-light);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: var(--transition);
+    margin: 4px;
+    cursor: pointer;
+}
+
+.location-tag:hover,
+.location-tag.active {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Trust Statistics Section */
+.trust-section {
+    background: var(--white);
+    padding: 80px 0;
+    position: relative;
+}
+
+.trust-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+}
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    text-align: center;
+}
+
+.trust-item {
+    padding: 40px 20px;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.trust-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.trust-item:hover::before {
+    opacity: 0.05;
+}
+
+.trust-item:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.trust-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    display: block;
+    position: relative;
+    z-index: 2;
+}
+
+.trust-label {
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 16px;
+    position: relative;
+    z-index: 2;
+}
+
+.trust-icon {
+    font-size: 40px;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Features Section Enhancement */
+.features-section {
+    padding: 120px 0;
+    background: var(--bg-light);
+    position: relative;
+}
+
+.features-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('{% static "images/pattern.svg" %}') repeat;
+    opacity: 0.03;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+}
+
+.section-badge {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 48px;
+    border-radius: 24px;
+    text-align: center;
+    transition: var(--transition);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-accent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover::before {
+    transform: scaleX(1);
+}
+
+.feature-card:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-heavy);
+    border-color: transparent;
+}
+
+.feature-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 32px;
+    box-shadow: 0 15px 35px rgba(255, 193, 7, 0.3);
+    transition: var(--transition);
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 20px 40px rgba(255, 193, 7, 0.4);
+}
+
+.feature-icon i {
+    font-size: 36px;
+    color: var(--text-dark);
+}
+
+.feature-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.feature-description {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.feature-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.feature-link:hover {
+    color: var(--accent-color);
+    transform: translateX(5px);
+}
+
+.feature-link i {
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+
+.feature-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Vehicle Showcase Section */
+.vehicles-section {
+    padding: 120px 0;
+    background: var(--white);
+    position: relative;
+}
+
+.vehicles-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    margin-bottom: 80px;
+}
+
+.vehicle-slide {
+    position: relative;
+    height: 600px;
+    display: flex;
+    align-items: center;
+    background: var(--gradient-primary);
+    overflow: hidden;
+}
+
+.vehicle-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(30, 60, 114, 0.9), rgba(42, 82, 152, 0.7));
+    z-index: 2;
+}
+
+.vehicle-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+.vehicle-content {
+    position: relative;
+    z-index: 3;
+    color: var(--white);
+    padding: 0 60px;
+}
+
+.vehicle-badge {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.vehicle-name {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.vehicle-description {
+    font-size: 1.2rem;
+    margin-bottom: 32px;
+    opacity: 0.9;
+    max-width: 500px;
+}
+
+.vehicle-specs {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.vehicle-spec {
+    text-align: center;
+}
+
+.vehicle-spec-icon {
+    font-size: 24px;
+    color: var(--accent-color);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.vehicle-spec-value {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.vehicle-spec-label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.vehicle-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    margin-bottom: 8px;
+}
+
+.vehicle-price-period {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 32px;
+}
+
+/* Fleet Grid Enhancement */
+.fleet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 32px;
+}
+
+.vehicle-card {
+    background: var(--white);
+    border: none;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    position: relative;
+}
+
+.vehicle-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.vehicle-card:hover::before {
+    opacity: 0.02;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.vehicle-image {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+}
+
+.vehicle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.vehicle-card:hover .vehicle-image img {
+    transform: scale(1.08);
+}
+
+.vehicle-label {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.vehicle-info {
+    padding: 32px;
+    position: relative;
+    z-index: 2;
+}
+
+.vehicle-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.vehicle-subtitle {
+    color: var(--text-light);
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.vehicle-features {
+    background: var(--bg-light);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.features-row {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.feature-item {
+    flex: 1;
+}
+
+.feature-icon {
+    color: var(--text-light);
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.feature-value {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 14px;
+}
+
+.vehicle-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vehicle-pricing {
+    flex: 1;
+}
+
+.price-main {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 0;
+}
+
+.price-period {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+/* Process Section Enhancement */
+.process-section {
+    padding: 120px 0;
+    background: var(--gradient-primary);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.process-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('{% static "images/car-pattern.svg" %}') repeat;
+    opacity: 0.05;
+}
+
+.process-content {
+    position: relative;
+    z-index: 2;
+}
+
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 48px;
+    margin-top: 80px;
+}
+
+.process-step {
+    text-align: center;
+    position: relative;
+}
+
+.process-step::after {
+    content: '';
+    position: absolute;
+    top: 50px;
+    right: -24px;
+    width: 48px;
+    height: 2px;
+    background: var(--accent-color);
+    opacity: 0.5;
+}
+
+.process-step:last-child::after {
+    display: none;
+}
+
+.process-number {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    font-size: 2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 15px 35px rgba(255, 193, 7, 0.3);
+}
+
+.process-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.process-description {
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    padding: 120px 0;
+    background: var(--bg-light);
+    position: relative;
+}
+
+.testimonials-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+}
+
+.testimonial-slide {
+    background: var(--white);
+    padding: 60px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-light);
+    text-align: center;
+    margin: 20px;
+    position: relative;
+}
+
+.testimonial-slide::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 120px;
+    color: var(--accent-color);
+    opacity: 0.3;
+    font-family: serif;
+    line-height: 1;
+}
+
+.testimonial-stars {
+    color: var(--accent-color);
+    font-size: 20px;
+    margin-bottom: 24px;
+}
+
+.testimonial-content {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.author-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.author-info h6 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.author-info small {
+    color: var(--text-light);
+}
+
+/* Locations Section */
+.locations-section {
+    padding: 120px 0;
+    background: var(--white);
+}
+
+.locations-map {
+    height: 500px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    margin-bottom: 60px;
+    background: var(--bg-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+}
+
+.locations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+}
+
+.location-card {
+    background: var(--white);
+    border: 2px solid var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: 32px;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.location-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-light);
+}
+
+.location-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 24px;
+}
+
+.location-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+}
+
+.location-address {
+    color: var(--text-light);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.location-contact {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    background: var(--gradient-primary);
+    padding: 80px 0;
+    color: var(--white);
+}
+
+.newsletter-content {
+    text-align: center;
+}
+
+.newsletter-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.newsletter-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.newsletter-form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.newsletter-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+}
+
+.newsletter-btn {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    border: none;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.newsletter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+}
+
+/* FAQ Section - Continued */
+.faq-section {
+   padding: 120px 0;
+   background: var(--bg-light);
+}
+
+.faq-accordion .accordion-item {
+   border: none;
+   margin-bottom: 16px;
+   border-radius: var(--border-radius) !important;
+   overflow: hidden;
+   box-shadow: var(--shadow-light);
+}
+
+.faq-accordion .accordion-header {
+   border: none;
+}
+
+.faq-accordion .accordion-button {
+   background: var(--white);
+   border: none;
+   padding: 24px 32px;
+   font-weight: 600;
+   font-size: 1.1rem;
+   color: var(--primary-color);
+   border-radius: var(--border-radius) !important;
+}
+
+.faq-accordion .accordion-button:not(.collapsed) {
+   background: var(--gradient-accent);
+   color: var(--text-dark);
+   box-shadow: none;
+}
+
+.faq-accordion .accordion-button:focus {
+   border-color: var(--accent-color);
+   box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+.faq-accordion .accordion-body {
+   padding: 24px 32px;
+   background: var(--white);
+   color: var(--text-light);
+   line-height: 1.7;
+}
+
+/* Floating Navigation */
+.floating-nav {
+   position: fixed;
+   top: 50%;
+   right: 30px;
+   transform: translateY(-50%);
+   z-index: 1000;
+   background: rgba(255, 255, 255, 0.9);
+   backdrop-filter: blur(10px);
+   border-radius: 25px;
+   padding: 16px 8px;
+   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+   opacity: 0;
+   transition: opacity 0.3s ease;
+}
+
+.floating-nav.show {
+   opacity: 1;
+}
+
+.floating-nav-item {
+   display: block;
+   width: 12px;
+   height: 12px;
+   border-radius: 50%;
+   background: #ddd;
+   margin: 12px 0;
+   transition: var(--transition);
+   cursor: pointer;
+   position: relative;
+}
+
+.floating-nav-item.active,
+.floating-nav-item:hover {
+   background: var(--accent-color);
+   transform: scale(1.3);
+}
+
+.floating-nav-item::after {
+   content: attr(data-label);
+   position: absolute;
+   right: 25px;
+   top: 50%;
+   transform: translateY(-50%);
+   background: var(--text-dark);
+   color: var(--white);
+   padding: 6px 12px;
+   border-radius: 6px;
+   font-size: 12px;
+   white-space: nowrap;
+   opacity: 0;
+   pointer-events: none;
+   transition: opacity 0.3s ease;
+}
+
+.floating-nav-item:hover::after {
+   opacity: 1;
+}
+
+/* Trust Ticker */
+.trust-ticker {
+   background: var(--bg-light);
+   padding: 20px 0;
+   overflow: hidden;
+   position: relative;
+}
+
+.trust-ticker-content {
+   display: flex;
+   animation: scrollLeft 30s linear infinite;
+   white-space: nowrap;
+}
+
+.trust-item {
+   display: flex;
+   align-items: center;
+   margin-right: 60px;
+   font-size: 14px;
+   color: var(--text-light);
+   font-weight: 500;
+}
+
+.trust-item i {
+   color: var(--accent-color);
+   margin-right: 8px;
+   font-size: 16px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+   .hero-title {
+       font-size: 2.5rem;
+   }
+   
+   .search-card .card-body {
+       padding: 24px;
+   }
+   
+   .newsletter-form {
+       flex-direction: column;
+   }
+   
+   .newsletter-input {
+       min-width: 100%;
+   }
+   
+   .process-step::after {
+       display: none;
+   }
+   
+   .vehicle-specs {
+       justify-content: center;
+   }
+   
+   .features-grid {
+       grid-template-columns: 1fr;
+   }
+   
+   .fleet-grid {
+       grid-template-columns: 1fr;
+   }
+   
+   .floating-nav {
+       display: none;
+   }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+   from {
+       opacity: 0;
+       transform: translateY(30px);
+   }
+   to {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}
+
+@keyframes slideInRight {
+   from {
+       opacity: 0;
+       transform: translateX(50px);
+   }
+   to {
+       opacity: 1;
+       transform: translateX(0);
+   }
+}
+
+@keyframes scrollLeft {
+   0% {
+       transform: translateX(100%);
+   }
+   100% {
+       transform: translateX(-100%);
+   }
+}
+
+/* Loading States */
+.btn-loading {
+   position: relative;
+   pointer-events: none;
+}
+
+.btn-loading::after {
+   content: '';
+   position: absolute;
+   width: 16px;
+   height: 16px;
+   top: 50%;
+   left: 50%;
+   margin-left: -8px;
+   margin-top: -8px;
+   border: 2px solid transparent;
+   border-top-color: currentColor;
+   border-radius: 50%;
+   animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+   0% { transform: rotate(0deg); }
+   100% { transform: rotate(360deg); }
+}
+
+/* Accessibility Improvements */
+.sr-only {
+   position: absolute;
+   width: 1px;
+   height: 1px;
+   padding: 0;
+   margin: -1px;
+   overflow: hidden;
+   clip: rect(0, 0, 0, 0);
+   white-space: nowrap;
+   border: 0;
+}
+
+.skip-link {
+   position: absolute;
+   top: -40px;
+   left: 6px;
+   background: var(--primary-color);
+   color: var(--white);
+   padding: 8px;
+   text-decoration: none;
+   z-index: 100;
+}
+
+.skip-link:focus {
+   top: 6px;
+}
+
+/* Print Styles */
+@media print {
+   .hero-video,
+   .floating-nav,
+   .trust-ticker {
+       display: none;
+   }
+   
+   .hero-section {
+       background: var(--white) !important;
+       color: var(--text-dark) !important;
+       min-height: auto;
+   }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Skip to main content for accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Hero Section with Video Background -->
+<section class="hero-section" id="home">
+   <video class="hero-video" autoplay muted loop playsinline>
+       <source src="{% static 'videos/hero-car-driving.mp4' %}" type="video/mp4">
+       Your browser does not support the video tag.
+   </video>
+   <div class="hero-overlay"></div>
+   
+   <div class="container">
+       <div class="row align-items-center min-vh-100">
+           <div class="col-lg-6">
+               <div class="hero-content">
+                   <div class="hero-badge" data-aos="fade-up">
+                       <i class="fas fa-star me-2"></i>Premium Car Rental Service
+                   </div>
+                   
+                   <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
+                       Your Perfect <span class="highlight">Journey</span> Starts Here
+                   </h1>
+                   
+                   <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                       Experience the freedom of the road with our premium fleet of vehicles. 
+                       From economy to luxury, we have the perfect car for every adventure.
+                   </p>
+                   
+                   <div class="hero-buttons" data-aos="fade-up" data-aos-delay="600">
+                       <a href="#vehicles" class="btn btn-hero-primary">
+                           <i class="fas fa-car me-2"></i>Browse Fleet
+                       </a>
+                       <a href="#how-it-works" class="btn btn-hero-secondary">
+                           <i class="fas fa-play me-2"></i>How It Works
+                       </a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="col-lg-6">
+               <div class="search-card" data-aos="fade-left" data-aos-delay="800">
+                   <div class="card-body">
+                       <h3 class="search-card-title">
+                           <i class="fas fa-search"></i>Find Your Perfect Ride
+                       </h3>
+                       
+                       <form id="heroSearchForm" method="GET" action="{% url 'search_vehicles' %}">
+                           <div class="row">
+                               <div class="col-12">
+                                   <div class="form-floating">
+                                       <input type="text" class="form-control" id="pickupLocation" 
+                                              name="pickup_location" placeholder="Pickup Location" required>
+                                       <label for="pickupLocation">Pickup Location</label>
+                                   </div>
+                               </div>
+                               
+                               <div class="col-md-6">
+                                   <div class="form-floating">
+                                       <input type="date" class="form-control" id="pickupDate" 
+                                              name="pickup_date" required>
+                                       <label for="pickupDate">Pickup Date</label>
+                                   </div>
+                               </div>
+                               
+                               <div class="col-md-6">
+                                   <div class="form-floating">
+                                       <input type="date" class="form-control" id="returnDate" 
+                                              name="return_date" required>
+                                       <label for="returnDate">Return Date</label>
+                                   </div>
+                               </div>
+                               
+                               <div class="col-md-6">
+                                   <div class="form-floating">
+                                       <input type="time" class="form-control" id="pickupTime" 
+                                              name="pickup_time" value="10:00">
+                                       <label for="pickupTime">Pickup Time</label>
+                                   </div>
+                               </div>
+                               
+                               <div class="col-md-6">
+                                   <div class="form-floating">
+                                       <input type="time" class="form-control" id="returnTime" 
+                                              name="return_time" value="10:00">
+                                       <label for="returnTime">Return Time</label>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <button type="submit" class="btn btn-search">
+                               <i class="fas fa-search me-2"></i>Search Available Cars
+                           </button>
+                       </form>
+                       
+                       <div class="popular-locations">
+                           <small class="text-muted">Popular locations:</small><br>
+                           <div class="location-tags-container mt-2">
+                               <button type="button" class="btn btn-sm btn-outline-primary location-tag" data-location="Airport">Airport</button>
+                               <button type="button" class="btn btn-sm btn-outline-primary location-tag" data-location="Downtown">Downtown</button>
+                               <button type="button" class="btn btn-sm btn-outline-primary location-tag" data-location="City Center">City Center</button>
+                               <button type="button" class="btn btn-sm btn-outline-primary location-tag" data-location="Hotel District">Hotel District</button>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</section>
+
+<!-- Trust Statistics Section -->
+<section class="trust-section" id="trust">
+   <div class="container">
+       <div class="trust-grid">
+           <div class="trust-item" data-aos="fade-up" data-aos-delay="100">
+               <div class="trust-icon">
+                   <i class="fas fa-users"></i>
+               </div>
+               <span class="trust-number">50,000+</span>
+               <div class="trust-label">Happy Customers</div>
+           </div>
+           
+           <div class="trust-item" data-aos="fade-up" data-aos-delay="200">
+               <div class="trust-icon">
+                   <i class="fas fa-car"></i>
+               </div>
+               <span class="trust-number">1,000+</span>
+               <div class="trust-label">Vehicles Available</div>
+           </div>
+           
+           <div class="trust-item" data-aos="fade-up" data-aos-delay="300">
+               <div class="trust-icon">
+                   <i class="fas fa-map-marker-alt"></i>
+               </div>
+               <span class="trust-number">50+</span>
+               <div class="trust-label">Pickup Locations</div>
+           </div>
+           
+           <div class="trust-item" data-aos="fade-up" data-aos-delay="400">
+               <div class="trust-icon">
+                   <i class="fas fa-star"></i>
+               </div>
+               <span class="trust-number">4.9</span>
+               <div class="trust-label">Average Rating</div>
+           </div>
+       </div>
+   </div>
+</section>
+
+<!-- Trust Ticker -->
+<section class="trust-ticker">
+   <div class="trust-ticker-content">
+       <div class="trust-item">
+           <i class="fas fa-shield-alt"></i>
+           Fully Insured Vehicles
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-clock"></i>
+           24/7 Customer Support
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-medal"></i>
+           Award-Winning Service
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-handshake"></i>
+           Trusted by 50,000+ Customers
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-map-marked-alt"></i>
+           Nationwide Coverage
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-mobile-alt"></i>
+           Easy Mobile Booking
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-credit-card"></i>
+           Secure Online Payments
+       </div>
+       <div class="trust-item">
+           <i class="fas fa-tools"></i>
+           Regular Maintenance Checks
+       </div>
+   </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+   <div class="features-bg"></div>
+   <div class="container">
+       <div class="section-header" data-aos="fade-up">
+           <div class="section-badge">Why Choose Us</div>
+           <h2 class="section-title">Premium Car Rental Experience</h2>
+           <p class="section-subtitle">
+               We provide exceptional service with modern vehicles, competitive pricing, 
+               and unmatched customer support to make your journey memorable.
+           </p>
+       </div>
+       
+       <div class="features-grid">
+           <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+               <div class="feature-icon">
+                   <i class="fas fa-car"></i>
+               </div>
+               <h4 class="feature-title">Modern Fleet</h4>
+               <p class="feature-description">
+                   Choose from our extensive collection of well-maintained, modern vehicles 
+                   ranging from economy cars to luxury SUVs and sports cars.
+               </p>
+               <a href="#vehicles" class="feature-link">
+                   View Fleet <i class="fas fa-arrow-right"></i>
+               </a>
+           </div>
+           
+           <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+               <div class="feature-icon">
+                   <i class="fas fa-dollar-sign"></i>
+               </div>
+               <h4 class="feature-title">Best Prices</h4>
+               <p class="feature-description">
+                   Enjoy competitive pricing with no hidden fees. We offer transparent 
+                   pricing and special discounts for long-term rentals.
+               </p>
+               <a href="#pricing" class="feature-link">
+                   See Pricing <i class="fas fa-arrow-right"></i>
+               </a>
+           </div>
+           
+           <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+               <div class="feature-icon">
+                   <i class="fas fa-headset"></i>
+               </div>
+               <h4 class="feature-title">24/7 Support</h4>
+               <p class="feature-description">
+                   Our dedicated customer support team is available round the clock 
+                   to assist you with any questions or roadside assistance.
+               </p>
+               <a href="#contact" class="feature-link">
+                   Contact Us <i class="fas fa-arrow-right"></i>
+               </a>
+           </div>
+           
+           <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+               <div class="feature-icon">
+                   <i class="fas fa-mobile-alt"></i>
+               </div>
+               <h4 class="feature-title">Easy Booking</h4>
+               <p class="feature-description">
+                   Book your perfect car in just a few clicks through our user-friendly 
+                   website or mobile app. Instant confirmation guaranteed.
+               </p>
+               <a href="#booking" class="feature-link">
+                   Book Now <i class="fas fa-arrow-right"></i>
+               </a>
+           </div>
+           
+           <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+               <div class="feature-icon">
+                   <i class="fas fa-shield-alt"></i>
+               </div>
+               <h4 class="feature-title">Fully Insured</h4>
+               <p class="feature-description">
+                   All our vehicles come with comprehensive insurance coverage 
+                   and roadside assistance for your peace of mind.
+               </p>
+               <a href="#insurance" class="feature-link">
+                   Learn More <i class="fas fa-arrow-right"></i>
+               </a>
+           </div>
+           
+           <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+               <div class="feature-icon">
+                   <i class="fas fa-map-marker-alt"></i>
+               </div>
+               <h4 class="feature-title">Multiple Locations</h4>
+               <p class="feature-description">
+                   With over 50 pickup locations across the country, you can 
+                   conveniently collect and return your vehicle anywhere.
+               </p>
+               <a href="#locations" class="feature-link">
+                   Find Locations <i class="fas fa-arrow-right"></i>
+               </a>
+           </div>
+       </div>
+   </div>
+</section>
+
+<!-- Vehicle Showcase Section -->
+<section class="vehicles-section" id="vehicles">
+   <div class="container">
+       <div class="section-header" data-aos="fade-up">
+           <div class="section-badge">Our Fleet</div>
+           <h2 class="section-title">Choose Your Perfect Vehicle</h2>
+           <p class="section-subtitle">
+               From compact cars for city driving to luxury vehicles for special occasions, 
+               we have the perfect car for every need and budget.
+           </p>
+       </div>
+       
+       <!-- Featured Vehicle Carousel -->
+       <div class="vehicles-carousel" data-aos="fade-up" data-aos-delay="200">
+           <div class="swiper vehicleSwiper">
+               <div class="swiper-wrapper">
+                   <div class="swiper-slide">
+                       <div class="vehicle-slide">
+                           <div class="vehicle-bg" style="background-image: url('{% static "images/luxury-car-bg.jpg" %}')"></div>
+                           <div class="vehicle-content">
+                               <div class="row align-items-center">
+                                   <div class="col-md-6">
+                                       <div class="vehicle-badge">Luxury</div>
+                                       <h3 class="vehicle-name">BMW 7 Series</h3>
+                                       <p class="vehicle-description">
+                                           Experience ultimate luxury and comfort with advanced technology 
+                                           and premium features for your special occasions.
+                                       </p>
+                                       
+                                       <div class="vehicle-specs">
+                                           <div class="vehicle-spec">
+                                               <i class="vehicle-spec-icon fas fa-users"></i>
+                                               <div class="vehicle-spec-value">5</div>
+                                               <div class="vehicle-spec-label">Passengers</div>
+                                           </div>
+                                           <div class="vehicle-spec">
+                                               <i class="vehicle-spec-icon fas fa-cog"></i>
+                                               <div class="vehicle-spec-value">Auto</div>
+                                               <div class="vehicle-spec-label">Transmission</div>
+                                           </div>
+                                           <div class="vehicle-spec">
+                                               <i class="vehicle-spec-icon fas fa-gas-pump"></i>
+                                               <div class="vehicle-spec-value">Premium</div>
+                                               <div class="vehicle-spec-label">Fuel Type</div>
+                                           </div>
+                                       </div>
+                                       
+                                       <div class="vehicle-price">$89</div>
+                                       <div class="vehicle-price-period">per day</div>
+                                       
+                                       <a href="#" class="btn btn-hero-primary">Book Now</a>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="swiper-slide">
+                       <div class="vehicle-slide">
+                           <div class="vehicle-bg" style="background-image: url('{% static "images/suv-car-bg.jpg" %}')"></div>
+                           <div class="vehicle-content">
+                               <div class="row align-items-center">
+                                   <div class="col-md-6">
+                                       <div class="vehicle-badge">SUV</div>
+                                       <h3 class="vehicle-name">Toyota RAV4</h3>
+                                       <p class="vehicle-description">
+                                           Perfect for family trips and adventures with spacious interior, 
+                                           excellent safety features, and reliable performance.
+                                       </p>
+                                       
+                                       <div class="vehicle-specs">
+                                           <div class="vehicle-spec">
+                                               <i class="vehicle-spec-icon fas fa-users"></i>
+                                               <div class="vehicle-spec-value">7</div>
+                                               <div class="vehicle-spec-label">Passengers</div>
+                                           </div>
+                                           <div class="vehicle-spec">
+                                               <i class="vehicle-spec-icon fas fa-cog"></i>
+                                               <div class="vehicle-spec-value">Auto</div>
+                                               <div class="vehicle-spec-label">Transmission</div>
+                                           </div>
+                                           <div class="vehicle-spec">
+                                               <i class="vehicle-spec-icon fas fa-gas-pump"></i>
+                                               <div class="vehicle-spec-value">Hybrid</div>
+                                               <div class="vehicle-spec-label">Fuel Type</div>
+                                           </div>
+                                       </div>
+                                       
+                                       <div class="vehicle-price">$45</div>
+                                       <div class="vehicle-price-period">per day</div>
+                                       
+                                       <a href="#" class="btn btn-hero-primary">Book Now</a>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="swiper-pagination"></div>
+               <div class="swiper-button-next"></div>
+               <div class="swiper-button-prev"></div>
+           </div>
+       </div>
+       
+       <!-- Vehicle Grid -->
+       <div class="fleet-grid">
+           <div class="vehicle-card" data-aos="fade-up" data-aos-delay="100">
+               <div class="vehicle-image">
+                   <img src="{% static 'images/economy-car.jpg' %}" alt="Economy Car" class="lazy-load">
+                   <div class="vehicle-label">Popular</div>
+               </div>
+               <div class="vehicle-info">
+                   <h5 class="vehicle-title">Nissan Versa</h5>
+                   <p class="vehicle-subtitle">Economy • Compact</p>
+                   
+                   <div class="vehicle-features">
+                       <div class="features-row">
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-users"></i>
+                               <div class="feature-value">4 Seats</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-suitcase"></i>
+                               <div class="feature-value">2 Bags</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-cog"></i>
+                               <div class="feature-value">Manual</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="vehicle-footer">
+                       <div class="vehicle-pricing">
+                           <div class="price-main">$25</div>
+                           <div class="price-period">per day</div>
+                       </div>
+                       <a href="#" class="btn btn-outline-primary">View Details</a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="vehicle-card" data-aos="fade-up" data-aos-delay="200">
+               <div class="vehicle-image">
+                   <img src="{% static 'images/sedan-car.jpg' %}" alt="Sedan Car" class="lazy-load">
+                   <div class="vehicle-label">Best Value</div>
+               </div>
+               <div class="vehicle-info">
+                   <h5 class="vehicle-title">Honda Accord</h5>
+                   <p class="vehicle-subtitle">Sedan • Mid-size</p>
+                   
+                   <div class="vehicle-features">
+                       <div class="features-row">
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-users"></i>
+                               <div class="feature-value">5 Seats</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-suitcase"></i>
+                               <div class="feature-value">3 Bags</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-cog"></i>
+                               <div class="feature-value">Auto</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="vehicle-footer">
+                       <div class="vehicle-pricing">
+                           <div class="price-main">$35</div>
+                           <div class="price-period">per day</div>
+                       </div>
+                       <a href="#" class="btn btn-outline-primary">View Details</a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="vehicle-card" data-aos="fade-up" data-aos-delay="300">
+               <div class="vehicle-image">
+                   <img src="{% static 'images/suv-car.jpg' %}" alt="SUV Car" class="lazy-load">
+                   <div class="vehicle-label">Family Choice</div>
+               </div>
+               <div class="vehicle-info">
+                   <h5 class="vehicle-title">Ford Explorer</h5>
+                   <p class="vehicle-subtitle">SUV • Full-size</p>
+                   
+                   <div class="vehicle-features">
+                       <div class="features-row">
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-users"></i>
+                               <div class="feature-value">7 Seats</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-suitcase"></i>
+                               <div class="feature-value">5 Bags</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-cog"></i>
+                               <div class="feature-value">Auto</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="vehicle-footer">
+                       <div class="vehicle-pricing">
+                           <div class="price-main">$55</div>
+                           <div class="price-period">per day</div>
+                       </div>
+                       <a href="#" class="btn btn-outline-primary">View Details</a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="vehicle-card" data-aos="fade-up" data-aos-delay="400">
+               <div class="vehicle-image">
+                   <img src="{% static 'images/luxury-car.jpg' %}" alt="Luxury Car" class="lazy-load">
+                   <div class="vehicle-label">Premium</div>
+               </div>
+               <div class="vehicle-info">
+                   <h5 class="vehicle-title">Mercedes C-Class</h5>
+                   <p class="vehicle-subtitle">Luxury • Executive</p>
+                   
+                   <div class="vehicle-features">
+                       <div class="features-row">
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-users"></i>
+                               <div class="feature-value">5 Seats</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-suitcase"></i>
+                               <div class="feature-value">3 Bags</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-cog"></i>
+                               <div class="feature-value">Auto</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="vehicle-footer">
+                       <div class="vehicle-pricing">
+                           <div class="price-main">$79</div>
+                           <div class="price-period">per day</div>
+                       </div>
+                       <a href="#" class="btn btn-outline-primary">View Details</a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="vehicle-card" data-aos="fade-up" data-aos-delay="500">
+               <div class="vehicle-image">
+                   <img src="{% static 'images/sports-car.jpg' %}" alt="Sports Car" class="lazy-load">
+                   <div class="vehicle-label">Exclusive</div>
+               </div>
+               <div class="vehicle-info">
+                   <h5 class="vehicle-title">Porsche 911</h5>
+                   <p class="vehicle-subtitle">Sports • Performance</p>
+                   
+                   <div class="vehicle-features">
+                       <div class="features-row">
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-users"></i>
+                               <div class="feature-value">2 Seats</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-suitcase"></i>
+                               <div class="feature-value">1 Bag</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-cog"></i>
+                               <div class="feature-value">Manual</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="vehicle-footer">
+                       <div class="vehicle-pricing">
+                           <div class="price-main">$199</div>
+                           <div class="price-period">per day</div>
+                       </div>
+                       <a href="#" class="btn btn-outline-primary">View Details</a>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="vehicle-card" data-aos="fade-up" data-aos-delay="600">
+               <div class="vehicle-image">
+                   <img src="{% static 'images/electric-car.jpg' %}" alt="Electric Car" class="lazy-load">
+                   <div class="vehicle-label">Eco-Friendly</div>
+               </div>
+               <div class="vehicle-info">
+                   <h5 class="vehicle-title">Tesla Model 3</h5>
+                   <p class="vehicle-subtitle">Electric • Sustainable</p>
+                   
+                   <div class="vehicle-features">
+                       <div class="features-row">
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-users"></i>
+                               <div class="feature-value">5 Seats</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-battery-full"></i>
+                               <div class="feature-value">350mi</div>
+                           </div>
+                           <div class="feature-item">
+                               <i class="feature-icon fas fa-bolt"></i>
+                               <div class="feature-value">Electric</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="vehicle-footer">
+                       <div class="vehicle-pricing">
+                           <div class="price-main">$65</div>
+                           <div class="price-period">per day</div>
+                       </div>
+                       <a href="#" class="btn btn-outline-primary">View Details</a>
+                   </div>
+               </div>
+           </div>
+       </div>
+       
+       <div class="text-center mt-5" data-aos="fade-up">
+           <a href="{% url 'vehicle_list' %}" class="btn btn-hero-primary btn-lg">
+               <i class="fas fa-car me-2"></i>View All Vehicles
+           </a>
+       </div>
+   </div>
+</section>
+
+<!-- How It Works Process Section -->
+<section class="process-section" id="how-it-works">
+   <div class="process-content">
+       <div class="container">
+           <div class="section-header" data-aos="fade-up">
+               <div class="section-badge">Simple Process</div>
+               <h2 class="section-title">How It Works</h2>
+               <p class="section-subtitle">
+                   Rent a car in just 4 simple steps. Our streamlined process makes 
+                   it easy to get on the road quickly and hassle-free.
+               </p>
+           </div>
+           
+           <div class="process-grid">
+               <div class="process-step" data-aos="fade-up" data-aos-delay="100">
+                   <div class="process-number">1</div>
+                   <h4 class="process-title">Choose Your Car</h4>
+                   <p class="process-description">
+                       Browse our extensive fleet and select the perfect vehicle 
+                       for your needs, budget, and preferences.
+                   </p>
+               </div>
+               
+               <div class="process-step" data-aos="fade-up" data-aos-delay="200">
+                   <div class="process-number">2</div>
+                   <h4 class="process-title">Book Online</h4>
+                   <p class="process-description">
+                       Complete your reservation online with our secure booking 
+                       system. Get instant confirmation via email.
+                   </p>
+               </div>
+               
+               <div class="process-step" data-aos="fade-up" data-aos-delay="300">
+                   <div class="process-number">3</div>
+                   <h4 class="process-title">Pick Up</h4>
+                   <p class="process-description">
+                       Collect your vehicle at your chosen location with valid 
+                       driver's license and credit card. Quick paperwork process.
+                   </p>
+               </div>
+               
+               <div class="process-step" data-aos="fade-up" data-aos-delay="400">
+                   <div class="process-number">4</div>
+                   <h4 class="process-title">Hit the Road</h4>
+                   <p class="process-description">
+                       Enjoy your journey with confidence. Return the car at any 
+                       of our locations when you're done.
+                   </p>
+               </div>
+           </div>
+       </div>
+   </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section" id="testimonials">
+   <div class="container">
+       <div class="section-header" data-aos="fade-up">
+           <div class="section-badge">Customer Reviews</div>
+           <h2 class="section-title">What Our Customers Say</h2>
+           <p class="section-subtitle">
+               Don't just take our word for it. Here's what our satisfied customers 
+               have to say about their experience with Aurora Motors.
+           </p>
+       </div>
+       
+       <div class="testimonials-carousel" data-aos="fade-up" data-aos-delay="200">
+           <div class="swiper testimonialSwiper">
+               <div class="swiper-wrapper">
+                   <div class="swiper-slide">
+                       <div class="testimonial-slide">
+                           <div class="testimonial-stars">
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                           </div>
+                           <p class="testimonial-content">
+                               "Absolutely fantastic service! The car was clean, well-maintained, 
+                               and the booking process was incredibly smooth. I've used Aurora Motors 
+                               for three business trips now, and they never disappoint."
+                           </p>
+                           <div class="testimonial-author">
+                               <div class="author-avatar">JD</div>
+                               <div class="author-info">
+                                   <h6>John Davis</h6>
+                                   <small>Business Executive</small>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="swiper-slide">
+                       <div class="testimonial-slide">
+                           <div class="testimonial-stars">
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                           </div>
+                           <p class="testimonial-content">
+                               "Perfect for our family vacation! The SUV was spacious and comfortable. 
+                               The pickup process was quick, and the staff was very helpful with 
+                               car seat installation. Highly recommended!"
+                           </p>
+                           <div class="testimonial-author">
+                               <div class="author-avatar">SM</div>
+                               <div class="author-info">
+                                   <h6>Sarah Mitchell</h6>
+                                   <small>Family Traveler</small>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="swiper-slide">
+                       <div class="testimonial-slide">
+                           <div class="testimonial-stars">
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                               <i class="fas fa-star"></i>
+                           </div>
+                           <p class="testimonial-content">
+                               "Great value for money and excellent customer service. When I had 
+                               a minor issue with the car, their 24/7 support resolved it within 
+                               30 minutes. That's what I call professional service!"
+                           </p>
+                           <div class="testimonial-author">
+                               <div class="author-avatar">MR</div>
+                               <div class="author-info">
+                                   <h6>Michael Rodriguez</h6>
+                                   <small>Frequent Renter</small>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="swiper-pagination"></div>
+           </div>
+       </div>
+   </div>
+</section>
+
+<!-- Locations Section -->
+<section class="locations-section" id="locations">
+   <div class="container">
+       <div class="section-header" data-aos="fade-up">
+           <div class="section-badge">Our Locations</div>
+           <h2 class="section-title">Pick Up & Drop Off Locations</h2>
+           <p class="section-subtitle">
+               With over 50 convenient locations across the country, you can easily 
+               pick up and return your rental car wherever you need it.
+           </p>
+       </div>
+       
+       <!-- Interactive Map Placeholder -->
+       <div class="locations-map" data-aos="fade-up" data-aos-delay="200">
+           <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="text-center">
+                   <i class="fas fa-map-marked-alt fa-3x text-muted mb-3"></i>
+                   <h5 class="text-muted">Interactive Map</h5>
+                   <p class="text-muted">Map integration will be displayed here</p>
+               </div>
+           </div>
+       </div>
+       
+       <div class="locations-grid">
+           <div class="location-card" data-aos="fade-up" data-aos-delay="100">
+               <div class="location-icon">
+                   <i class="fas fa-plane"></i>
+               </div>
+               <h5 class="location-name">Airport Locations</h5>
+               <p class="location-address">
+                   Available at all major airports<br>
+                   Terminal pickup & drop-off service
+               </p>
+               <div class="location-contact">
+                   <i class="fas fa-phone me-2"></i>1-800-AURORA
+               </div>
+           </div>
+           
+           <div class="location-card" data-aos="fade-up" data-aos-delay="200">
+               <div class="location-icon">
+                   <i class="fas fa-building"></i>
+               </div>
+               <h5 class="location-name">Downtown Centers</h5>
+               <p class="location-address">
+                   City center locations<br>
+                   Easy access via public transport
+               </p>
+               <div class="location-contact">
+                   <i class="fas fa-clock me-2"></i>6 AM - 10 PM Daily
+               </div>
+           </div>
+           
+           <div class="location-card" data-aos="fade-up" data-aos-delay="300">
+               <div class="location-icon">
+                   <i class="fas fa-hotel"></i>
+               </div>
+               <h5 class="location-name">Hotel Partnerships</h5>
+               <p class="location-address">
+                   Partner hotels & resorts<br>
+                   Convenient delivery service
+               </p>
+               <div class="location-contact">
+                   <i class="fas fa-handshake me-2"></i>Premium Service
+               </div>
+           </div>
+       </div>
+       
+       <div class="text-center mt-5" data-aos="fade-up">
+           <a href="{% url 'locations' %}" class="btn btn-hero-primary btn-lg">
+               <i class="fas fa-map-marker-alt me-2"></i>Find All Locations
+           </a>
+       </div>
+   </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section" id="faq">
+   <div class="container">
+       <div class="section-header" data-aos="fade-up">
+           <div class="section-badge">Need Help?</div>
+           <h2 class="section-title">Frequently Asked Questions</h2>
+           <p class="section-subtitle">
+               Find answers to common questions about our car rental service, 
+               booking process, and policies.
+           </p>
+       </div>
+       
+       <div class="row justify-content-center">
+           <div class="col-lg-8">
+               <div class="faq-accordion" data-aos="fade-up" data-aos-delay="200">
+                   <div class="accordion" id="faqAccordion">
+                       <div class="accordion-item">
+                           <h3 class="accordion-header">
+                               <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                       data-bs-target="#faq1" aria-expanded="true">
+                                   What do I need to rent a car?
+                               </button>
+                           </h3>
+                           <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                               <div class="accordion-body">
+                                   You need a valid driver's license, credit card in your name, and must be 
+                                   at least 21 years old. International drivers need a valid passport and 
+                                   international driving permit along with their home country license.
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <div class="accordion-item">
+                           <h3 class="accordion-header">
+                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                       data-bs-target="#faq2">
+                                   Can I modify or cancel my reservation?
+                               </button>
+                           </h3>
+                           <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                               <div class="accordion-body">
+                                   Yes, you can modify or cancel your reservation up to 24 hours before pickup 
+                                   without any fees. Changes made within 24 hours may incur a small processing fee. 
+                                   Cancellations are fully refundable when made more than 24 hours in advance.
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <div class="accordion-item">
+                           <h3 class="accordion-header">
+                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                       data-bs-target="#faq3">
+                                   Is insurance included in the rental?
+                               </button>
+                           </h3>
+                           <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                               <div class="accordion-body">
+                                   Basic insurance coverage is included with all rentals. We also offer 
+                                   comprehensive insurance packages for additional protection. You can also 
+                                   use your personal auto insurance or credit card coverage if applicable.
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <div class="accordion-item">
+                           <h3 class="accordion-header">
+                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                       data-bs-target="#faq4">
+                                   What happens if I return the car late?
+                               </button>
+                           </h3>
+                           <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                               <div class="accordion-body">
+                                   Late returns are charged on an hourly basis for the first 4 hours, 
+                                   after which a full additional day rate applies. We recommend contacting 
+                                   us if you know you'll be late to avoid any complications.
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <div class="accordion-item">
+                           <h3 class="accordion-header">
+                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                       data-bs-target="#faq5">
+                                   Can I add additional drivers?
+                               </button>
+                           </h3>
+                           <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                               <div class="accordion-body">
+                                   Yes, you can add additional drivers for a small daily fee. All additional 
+                                   drivers must be present during pickup with valid driver's license and 
+                                   must meet our age requirements. Spouses are often included at no extra charge.
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+       
+       <div class="text-center mt-5" data-aos="fade-up">
+           <a href="{% url 'faq' %}" class="btn btn-outline-primary btn-lg">
+               <i class="fas fa-question-circle me-2"></i>View All FAQs
+           </a>
+       </div>
+   </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section" id="newsletter">
+   <div class="container">
+       <div class="newsletter-content" data-aos="fade-up">
+           <h2 class="newsletter-title">Stay Updated</h2>
+           <p class="newsletter-subtitle">
+               Subscribe to our newsletter for special offers, new vehicle announcements, 
+               and travel tips delivered straight to your inbox.
+           </p>
+           
+           <form class="newsletter-form" data-aos="fade-up" data-aos-delay="200">
+               <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+               <button type="submit" class="newsletter-btn">
+                   <i class="fas fa-paper-plane me-2"></i>Subscribe
+               </button>
+           </form>
+           
+           <small class="text-white-50 mt-3 d-block">
+               We respect your privacy. Unsubscribe at any time.
+           </small>
+       </div>
+   </div>
+</section>
+
+<!-- Floating Navigation -->
+<nav class="floating-nav" id="floatingNav">
+   <a href="#home" class="floating-nav-item active" data-label="Home"></a>
+   <a href="#features" class="floating-nav-item" data-label="Features"></a>
+   <a href="#vehicles" class="floating-nav-item" data-label="Vehicles"></a>
+   <a href="#how-it-works" class="floating-nav-item" data-label="Process"></a>
+   <a href="#testimonials" class="floating-nav-item" data-label="Reviews"></a>
+   <a href="#locations" class="floating-nav-item" data-label="Locations"></a>
+</nav>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+// Aurora Motors Global Object
+window.AuroraMotors = {
+   trackEvent: function(category, action, label, value) {
+       // Analytics tracking implementation
+       if (typeof gtag !== 'undefined') {
+           gtag('event', action, {
+               event_category: category,
+               event_label: label,
+               value: value
+           });
+       }
+       console.log(`Event tracked: ${category}/${action}/${label}`, value);
+   },
+   
+   showNotification: function(type, message) {
+       const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+       const icon = type === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+       
+       const notification = $(`
+           <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+               <i class="${icon} me-2"></i>${message}
+               <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+           </div>
+       `);
+       
+       $('body').append(notification);
+       
+       // Auto-remove after 5 seconds
+       setTimeout(() => {
+           notification.alert('close');
+       }, 5000);
+   }
+};
+
+$(document).ready(function() {
+   // Initialize AOS (Animate On Scroll)
+   AOS.init({
+       duration: 800,
+       easing: 'ease-out-cubic',
+       once: true,
+       offset: 100
+   });
+   
+   // Initialize Swiper Carousels
+   const vehicleSwiper = new Swiper('.vehicleSwiper', {
+       slidesPerView: 1,
+       spaceBetween: 30,
+       loop: true,
+       autoplay: {
+           delay: 5000,
+           disableOnInteraction: false,
+       },
+       pagination: {
+           el: '.swiper-pagination',
+           clickable: true,
+       },
+       navigation: {
+           nextEl: '.swiper-button-next',
+           prevEl: '.swiper-button-prev',
+       },
+   });
+   
+   const testimonialSwiper = new Swiper('.testimonialSwiper', {
+       slidesPerView: 1,
+       spaceBetween: 30,
+       loop: true,
+       autoplay: {
+           delay: 4000,
+           disableOnInteraction: false,
+       },
+       pagination: {
+           el: '.swiper-pagination',
+           clickable: true,
+       },
+       breakpoints: {
+           768: {
+               slidesPerView: 2,
+           },
+           1024: {
+               slidesPerView: 3,
+           },
+       },
+   });
+   
+   // Set minimum date to today for date inputs
+   const today = new Date().toISOString().split('T')[0];
+   $('input[type="date"]').attr('min', today);
+   
+   // Set default pickup date to tomorrow
+   const tomorrow = new Date();
+   tomorrow.setDate(tomorrow.getDate() + 1);
+   $('#pickupDate').val(tomorrow.toISOString().split('T')[0]);
+   
+   // Set default return date to day after tomorrow
+   const dayAfterTomorrow = new Date();
+   dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 3);
+   $('#returnDate').val(dayAfterTomorrow.toISOString().split('T')[0]);
+   
+   // Popular location quick selection
+   $('.location-tag').click(function() {
+       const location = $(this).data('location');
+       $('#pickupLocation').val(location);
+       $(this).addClass('active').siblings().removeClass('active');
+   });
+   
+   // Auto-update return date when pickup date changes
+   $('#pickupDate').change(function() {
+       const pickupDate = new Date($(this).val());
+       const minReturnDate = new Date(pickupDate);
+       minReturnDate.setDate(minReturnDate.getDate() + 1);
+       
+       $('#returnDate').attr('min', minReturnDate.toISOString().split('T')[0]);
+       
+       // Update return date if it's before the new minimum
+       const currentReturnDate = new Date($('#returnDate').val());
+       if (currentReturnDate <= pickupDate) {
+           const suggestedReturn = new Date(pickupDate);
+           suggestedReturn.setDate(suggestedReturn.getDate() + 3);
+           $('#returnDate').val(suggestedReturn.toISOString().split('T')[0]);
+       }
+   });
+   
+   // Floating Navigation
+   const floatingNav = $('#floatingNav');
+   const sections = $('section[id]');
+   const navItems = $('.floating-nav-item');
+   
+   // Show/hide floating nav on scroll
+   $(window).scroll(function() {
+       if ($(this).scrollTop() > 500) {
+           floatingNav.addClass('show');
+       } else {
+           floatingNav.removeClass('show');
+       }
+       
+       // Update active nav item based on scroll position
+       let current = '';
+       sections.each(function() {
+           const sectionTop = $(this).offset().top;
+           const sectionHeight = $(this).outerHeight();
+           if ($(window).scrollTop() >= sectionTop - 200) {
+               current = $(this).attr('id');
+           }
+       });
+       
+       navItems.removeClass('active');
+       navItems.filter(`[href="#${current}"]`).addClass('active');
+   });
+   
+   // Smooth scrolling for navigation links
+   $('a[href^="#"]').click(function(e) {
+       e.preventDefault();
+       const target = $(this.getAttribute('href'));
+       if (target.length) {
+           $('html, body').animate({
+               scrollTop: target.offset().top - 100
+           }, 800);
+       }
+   });
+   
+   // Counter animation for trust stats
+   const animateCounters = () => {
+       $('.trust-number').each(function() {
+           const $this = $(this);
+           const target = parseInt($this.text().replace(/\D/g, ''));
+           const suffix = $this.text().replace(/[\d,]/g, '');
+           
+           $({ counter: 0 }).animate({ counter: target }, {
+               duration: 2000,
+               easing: 'easeOutCubic',
+               step: function() {
+                   $this.text(Math.ceil(this.counter).toLocaleString() + suffix);
+               }
+           });
+       });
+   };
+   
+   // Trigger counter animation when trust section is in view
+   const trustObserver = new IntersectionObserver((entries) => {
+       entries.forEach(entry => {
+           if (entry.isIntersecting) {
+               animateCounters();
+               trustObserver.unobserve(entry.target);
+           }
+       });
+   }, { threshold: 0.5 });
+   
+   const trustSection = document.querySelector('.trust-section');
+   if (trustSection) {
+       trustObserver.observe(trustSection);
+   }
+   
+   // Form validation and enhancement
+   $('#heroSearchForm').on('submit', function(e) {
+       const pickupDate = new Date($('#pickupDate').val());
+       const returnDate = new Date($('#returnDate').val());
+       
+       if (returnDate <= pickupDate) {
+           e.preventDefault();
+           AuroraMotors.showNotification('error', 'Return date must be after pickup date');
+           return false;
+       }
+       
+       // Add loading state to button
+       const submitBtn = $(this).find('button[type="submit"]');
+       submitBtn.addClass('btn-loading').prop('disabled', true);
+       
+       // Track form submission
+       AuroraMotors.trackEvent('form', 'submit', 'hero_search');
+   });
+   
+   // Newsletter form handling
+   $('.newsletter-form').on('submit', function(e) {
+       e.preventDefault();
+       const email = $(this).find('input[type="email"]').val();
+       
+       // Simulate newsletter subscription
+       AuroraMotors.showNotification('success', 'Thank you for subscribing to our newsletter!');
+       AuroraMotors.trackEvent('newsletter', 'subscribe', email);
+       
+       // Reset form
+       $(this)[0].reset();
+   });
+   
+   // Lazy loading for images
+   const observerOptions = {
+       threshold: 0.1,
+       rootMargin: '0px 0px 50px 0px'
+   };
+   
+   const imageObserver = new IntersectionObserver((entries, observer) => {
+       entries.forEach(entry => {
+           if (entry.isIntersecting) {
+               const img = entry.target;
+               if (img.dataset.src) {
+                   img.src = img.dataset.src;
+               }
+               img.classList.add('loaded');
+               observer.unobserve(img);
+           }
+       });
+   }, observerOptions);
+   
+   // Observe all lazy-load images
+   document.querySelectorAll('.lazy-load').forEach(img => {
+       imageObserver.observe(img);
+   });
+   
+   // Track user interactions for analytics
+   $('.btn-hero-primary, .btn-hero-secondary').click(function() {
+       const action = $(this).text().trim();
+       AuroraMotors.trackEvent('cta', 'click', action);
+   });
+   
+   $('.vehicle-card a').click(function() {
+       const vehicleName = $(this).closest('.vehicle-card').find('.vehicle-title').text();
+       AuroraMotors.trackEvent('vehicle', 'view', vehicleName);
+   });
+   
+   // Enhanced keyboard navigation
+   $('.feature-card, .vehicle-card, .location-card').attr('tabindex', '0');
+   
+   $('.feature-card, .vehicle-card, .location-card').on('keydown', function(e) {
+       if (e.key === 'Enter' || e.key === ' ') {
+           e.preventDefault();
+           const link = $(this).find('a').first();
+           if (link.length) {
+               link[0].click();
+           }
+       }
+   });
+   
+   // Accessibility improvements
+   $('img').each(function() {
+       if (!$(this).attr('alt')) {
+           $(this).attr('alt', 'Vehicle image');
+       }
+   });
+   
+   // Performance optimization: Preload critical resources
+   const criticalResources = [
+       '/static/css/components.css',
+       '/static/js/booking.js'
+   ];
+   
+   criticalResources.forEach(resource => {
+       const link = document.createElement('link');
+       link.rel = 'prefetch';
+       link.href = resource;
+       document.head.appendChild(link);
+   });
+   
+   // Location-based suggestions
+   if (navigator.geolocation) {
+       navigator.geolocation.getCurrentPosition(
+           function(position) {
+               // Use position to suggest nearby pickup locations
+               suggestNearbyLocations(position.coords.latitude, position.coords.longitude);
+           },
+           function(error) {
+               // Gracefully handle geolocation errors
+               console.log('Geolocation not available:', error.message);
+           },
+           { timeout: 5000, enableHighAccuracy: false }
+       );
+   }
+   
+   // Page view tracking
+   AuroraMotors.trackEvent('page', 'view', 'home');
+   
+   // Service Worker registration for PWA features
+   if ('serviceWorker' in navigator) {
+       navigator.serviceWorker.register('/sw.js')
+           .then(registration => {
+               console.log('ServiceWorker registered:', registration);
+           })
+           .catch(error => {
+               console.log('ServiceWorker registration failed:', error);
+           });
+   }
+});
+
+// Helper functions
+function suggestNearbyLocations(lat, lng) {
+   // Use coordinates to suggest nearby pickup locations
+   const nearbyLocations = [
+       'Current Location',
+       'Nearest Airport',
+       'City Center'
+   ];
+   
+   const locationContainer = $('.location-tags-container');
+   if (locationContainer.length) {
+       nearbyLocations.forEach(location => {
+           const button = $(`<button type="button" class="btn btn-sm btn-outline-primary location-tag" data-location="${location}">${location}</button>`);
+           locationContainer.append(button);
+       });
+   }
+}
+
+// Global error handling
+window.addEventListener('error', function(e) {
+   console.error('JavaScript error:', e.error);
+   // Optionally send error reports to analytics
+   if (typeof AuroraMotors !== 'undefined' && AuroraMotors.trackEvent) {
+       AuroraMotors.trackEvent('error', 'javascript', e.error.message);
+   }
+});
+
+// Performance monitoring
+window.addEventListener('load', function() {
+   // Measure and report page load performance
+   if ('performance' in window) {
+       const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+       if (typeof AuroraMotors !== 'undefined' && AuroraMotors.trackEvent) {
+           AuroraMotors.trackEvent('performance', 'page_load', Math.round(loadTime));
+       }
+   }
+});
+
+// Dark mode toggle (optional feature)
+function toggleDarkMode() {
+   document.body.classList.toggle('dark-mode');
+   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+// Initialize dark mode from localStorage
+if (localStorage.getItem('darkMode') === 'true') {
+   document.body.classList.add('dark-mode');
+}
+
+// Intersection Observer for scroll animations
+const observeElements = () => {
+   const observer = new IntersectionObserver((entries) => {
+       entries.forEach(entry => {
+           if (entry.isIntersecting) {
+               entry.target.classList.add('animate-in');
+           }
+       });
+   }, {
+       threshold: 0.1,
+       rootMargin: '0px 0px -50px 0px'
+   });
+   
+   document.querySelectorAll('.animate-on-scroll').forEach(el => {
+       observer.observe(el);
+   });
+};
+
+// Initialize scroll animations
+document.addEventListener('DOMContentLoaded', observeElements);
+</script>
+{% endblock %}

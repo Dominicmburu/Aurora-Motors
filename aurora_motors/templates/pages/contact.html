@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Get in Touch</h4>
+                <small class="text-muted">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</small>
+            </div>
+            <div class="card-body">
+                <form method="post" id="contactForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" class="form-control" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" name="last_name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Subject *</label>
+                        <select class="form-select" name="subject" required>
+                            <option value="">Choose a topic</option>
+                            <option value="booking_inquiry">Booking Inquiry</option>
+                            <option value="existing_booking">Existing Booking</option>
+                            <option value="vehicle_issue">Vehicle Issue</option>
+                            <option value="payment">Payment & Billing</option>
+                            <option value="documents">Document Verification</option>
+                            <option value="feedback">Feedback & Suggestions</option>
+                            <option value="partnership">Business Partnership</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Booking Number (if applicable)</label>
+                        <input type="text" class="form-control" name="booking_number" placeholder="e.g., BK2025123456">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Message *</label>
+                        <textarea class="form-control" name="message" rows="6" placeholder="Please provide details about your inquiry..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Preferred Contact Method</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="preferred_contact" value="email" id="contact_email" checked>
+                            <label class="form-check-label" for="contact_email">Email</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="preferred_contact" value="phone" id="contact_phone">
+                            <label class="form-check-label" for="contact_phone">Phone Call</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Best Time to Contact (if phone selected)</label>
+                        <select class="form-select" name="best_time">
+                            <option value="">Any time</option>
+                            <option value="morning">Morning (8 AM - 12 PM)</option>
+                            <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                            <option value="evening">Evening (5 PM - 8 PM)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="newsletter_signup" id="newsletter">
+                        <label class="form-check-label" for="newsletter">
+                            Subscribe to our newsletter for updates and special offers
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Contact Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Contact Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="contact-item mb-3">
+                    <h6><i class="fas fa-phone text-primary me-2"></i>Phone</h6>
+                    <p class="mb-0">
+                        <strong>Main:</strong> (02) 1234 5678<br>
+                        <strong>Emergency:</strong> (02) 1234 5679<br>
+                        <small class="text-muted">Available 24/7</small>
+                    </p>
+                </div>
+                
+                <div class="contact-item mb-3">
+                    <h6><i class="fas fa-envelope text-primary me-2"></i>Email</h6>
+                    <p class="mb-0">
+                        <strong>General:</strong> info@auroramotors.com.au<br>
+                        <strong>Support:</strong> support@auroramotors.com.au<br>
+                        <strong>Bookings:</strong> bookings@auroramotors.com.au
+                    </p>
+                </div>
+                
+                <div class="contact-item mb-3">
+                    <h6><i class="fas fa-map-marker-alt text-primary me-2"></i>Address</h6>
+                    <p class="mb-0">
+                        123 Fleet Street<br>
+                        Sydney NSW 2000<br>
+                        Australia
+                    </p>
+                </div>
+                
+                <div class="contact-item">
+                    <h6><i class="fas fa-clock text-primary me-2"></i>Business Hours</h6>
+                    <p class="mb-0">
+                        <strong>Mon-Fri:</strong> 8:00 AM - 6:00 PM<br>
+                        <strong>Saturday:</strong> 9:00 AM - 5:00 PM<br>
+                        <strong>Sunday:</strong> 10:00 AM - 4:00 PM
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="tel:+611234567890" class="btn btn-outline-primary">
+                        <i class="fas fa-phone"></i> Call Now
+                    </a>
+                    <button type="button" class="btn btn-outline-success" onclick="openLiveChat()">
+                        <i class="fas fa-comments"></i> Start Live Chat
+                    </button>
+                    <a href="{% url 'vehicles:search' %}" class="btn btn-outline-info">
+                        <i class="fas fa-search"></i> Search Vehicles
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'bookings:list' %}" class="btn btn-outline-warning">
+                            <i class="fas fa-calendar-alt"></i> My Bookings
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ Links -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Frequently Asked Questions</h5>
+            </div>
+            <div class="card-body">
+                <div class="faq-links">
+                    <a href="#" class="d-block text-decoration-none mb-2">
+                        <i class="fas fa-question-circle text-muted me-2"></i>How do I modify my booking?
+                    </a>
+                    <a href="#" class="d-block text-decoration-none mb-2">
+                        <i class="fas fa-question-circle text-muted me-2"></i>What documents do I need?
+                    </a>
+                    <a href="#" class="d-block text-decoration-none mb-2">
+                        <i class="fas fa-question-circle text-muted me-2"></i>Cancellation policy
+                    </a>
+                    <a href="#" class="d-block text-decoration-none mb-2">
+                        <i class="fas fa-question-circle text-muted me-2"></i>Insurance coverage
+                    </a>
+                    <a href="#" class="d-block text-decoration-none">
+                        <i class="fas fa-question-circle text-muted me-2"></i>Emergency procedures
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Map Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Find Us</h5>
+            </div>
+            <div class="card-body p-0">
+                <div id="map" style="height: 400px; width: 100%;">
+                    <!-- Google Maps integration would go here -->
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.4849!2d151.2073!3d-33.8599!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDUxJzM1LjYiUyAxNTHCsDEyJzI2LjMiRQ!5e0!3m2!1sen!2sau!4v1234567890"
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#contactForm').submit(function(e) {
+        e.preventDefault();
+        
+        const formData = $(this).serialize();
+        const submitBtn = $(this).find('button[type="submit"]');
+        
+        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+        
+        $.post('{% url "contact" %}', formData)
+            .done(function(data) {
+                if (data.success) {
+                    AuroraMotors.showToast('success', 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.');
+                    $('#contactForm')[0].reset();
+                } else {
+                    AuroraMotors.showToast('error', data.message || 'Failed to send message. Please try again.');
+                }
+            })
+            .fail(function() {
+                AuroraMotors.showToast('error', 'Failed to send message. Please try again.');
+            })
+            .always(function() {
+                submitBtn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Send Message');
+            });
+    });
+});
+
+function openLiveChat() {
+    if (typeof Intercom !== 'undefined') {
+        Intercom('show');
+    } else {
+        AuroraMotors.showToast('info', 'Live chat will be available soon. Please use phone or email for now.');
+    }
+}
+</script>
+{% endblock %}
