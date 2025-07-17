@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contract Signing - Aurora Motors{% endblock %}
+
+{% block content %}
+<section class="contract-section">
+    <div class="container">
+        <div class="contract-header">
+            <h1>Welcome to Aurora Motors!</h1>
+            <p>Please review and sign our rental agreement to complete your registration</p>
+        </div>
+        
+        <div class="contract-container">
+            <div class="contract-content">
+                <div class="contract-document">
+                    <h2>Aurora Motors Rental Agreement</h2>
+                    
+                    <div class="contract-text">
+                        <h3>1. Agreement Terms</h3>
+                        <p>This rental agreement ("Agreement") is entered into between Aurora Motors Pty Ltd ("Company") and the user ("Renter") for the rental of vehicles.</p>
+                        
+                        <h3>2. Renter Responsibilities</h3>
+                        <ul>
+                            <li>The Renter must be at least 21 years of age and hold a valid driver's license</li>
+                            <li>The Renter agrees to use the vehicle in a careful and responsible manner</li>
+                            <li>The Renter is responsible for all traffic violations, fines, and penalties</li>
+                            <li>The vehicle must be returned with the same amount of fuel as when rented</li>
+                            <li>Smoking is strictly prohibited in all vehicles</li>
+                            <li>The Renter must report any accidents or damage immediately</li>
+                        </ul>
+                        
+                        <h3>3. Insurance Coverage</h3>
+                        <p>All rentals include comprehensive insurance coverage. The Renter is responsible for the deductible amount in case of damage.</p>
+                        
+                        <h3>4. Prohibited Uses</h3>
+                        <ul>
+                            <li>Racing, speed testing, or any competitive driving</li>
+                            <li>Transporting illegal substances or materials</li>
+                            <li>Subletting or unauthorized use by others</li>
+                            <li>Off-road driving (unless specifically authorized)</li>
+                            <li>Towing any vehicle or trailer</li>
+                        </ul>
+                        
+                        <h3>5. Cancellation Policy</h3>
+                        <p>Cancellations made more than 48 hours before pickup time will receive a full refund. Cancellations made within 48 hours may be subject to cancellation fees.</p>
+                        
+                        <h3>6. Privacy Policy</h3>
+                        <p>Aurora Motors respects your privacy and will protect your personal information in accordance with Australian Privacy Principles.</p>
+                    </div>
+                </div>
+                
+                <div class="signature-section">
+                    <h3>Digital Signature</h3>
+                    <p>Please sign below to indicate your agreement with the terms and conditions:</p>
+                    
+                    <form method="post" id="contract-form">
+                        {% csrf_token %}
+                        
+                        <div class="signature-pad-container">
+                            <canvas id="signature-canvas" class="signature-canvas"></canvas>
+                            <div class="signature-controls">
+                                <button type="button" id="clear-signature" class="btn btn-outline btn-small">
+                                    <i class="fas fa-eraser"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="agreement-checkbox">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="agree_terms" required>
+                                <span class="checkmark"></span>
+                                I have read, understood, and agree to all terms and conditions
+                            </label>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" id="submit-signature" class="btn btn-primary btn-large" disabled>
+                                <i class="fas fa-pen-fancy"></i>
+                                Sign Agreement
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="signature" id="signature-data">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/contract.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize contract signing
+    const form = document.getElementById('contract-form');
+    const agreeCheckbox = document.querySelector('input[name="agree_terms"]');
+    const submitButton = document.getElementById('submit-signature');
+    
+    function updateSubmitButton() {
+        const hasAgreed = agreeCheckbox.checked;
+        const hasSignature = hasSignatureData();
+        
+        submitButton.disabled = !hasAgreed || !hasSignature;
+    }
+    
+    agreeCheckbox.addEventListener('change', updateSubmitButton);
+    
+    // Check for signature updates periodically
+    setInterval(updateSubmitButton, 1000);
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const signatureData = document.getElementById('signature-canvas').toDataURL();
+        document.getElementById('signature-data').value = signatureData;
+        
+        // Submit the form
+        submitSignature();
+    });
+});
+
+function submitSignature() {
+    const form = document.getElementById('contract-form');
+    const formData = new FormData(form);
+    
+    fetch(form.action || window.location.pathname, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            AuroraMotors.showNotification('Contract signed successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = '{% url "dashboard" %}';
+            }, 1500);
+        } else {
+            throw new Error('Failed to submit signature');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        AuroraMotors.showNotification('Failed to submit signature. Please try again.', 'error');
+    });
+}
+
+function hasSignatureData() {
+    const canvas = document.getElementById('signature-canvas');
+    if (!canvas) return false;
+    
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    for (let i = 3; i < imageData.data.length; i += 4) {
+        if (imageData.data[i] !== 0) return true;
+    }
+    
+    return false;
+}
+</script>
+{% endblock %}

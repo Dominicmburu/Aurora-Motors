@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Aurora Motors{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<section class="dashboard-header">
+    <div class="container">
+        <div class="dashboard-welcome">
+            <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p>Manage your bookings and account settings</p>
+        </div>
+        
+        <div class="dashboard-actions">
+            <a href="{% url 'vehicles' %}" class="btn btn-primary">
+                <i class="fas fa-car"></i>
+                Browse Vehicles
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Stats -->
+<section class="dashboard-stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_bookings }}</h3>
+                    <p>Total Bookings</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ active_bookings }}</h3>
+                    <p>Active Rentals</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>${{ total_spent|floatformat:0 }}</h3>
+                    <p>Total Spent</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>4.8</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Bookings -->
+<section class="dashboard-content">
+    <div class="container">
+        <div class="content-grid">
+            <div class="main-content">
+                <div class="section-header">
+                    <h2>Recent Bookings</h2>
+                    <a href="{% url 'bookings' %}" class="btn btn-outline btn-small">View All</a>
+                </div>
+                
+                {% if user_bookings %}
+                    <div class="bookings-list">
+                        {% for booking in user_bookings %}
+                            <div class="booking-card">
+                                <div class="booking-image">
+                                    {% if booking.vehicle.images.first %}
+                                        <img src="{{ booking.vehicle.images.first.image.url }}" 
+                                             alt="{{ booking.vehicle.display_name }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default-car.jpg' %}" 
+                                             alt="{{ booking.vehicle.display_name }}">
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="booking-details">
+                                    <div class="booking-header">
+                                        <h3>{{ booking.vehicle.display_name }}</h3>
+                                        <span class="booking-status status-{{ booking.status }}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="booking-info">
+                                        <div class="info-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>{{ booking.start_date|date:"M j, Y" }} - {{ booking.end_date|date:"M j, Y" }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ booking.pickup_location }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            <span>${{ booking.total_amount }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="booking-actions">
+                                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-outline btn-small">
+                                            View Details
+                                        </a>
+                                        {% if booking.status == 'pending' %}
+                                            <button class="btn btn-danger btn-small" onclick="cancelBooking('{{ booking.id }}')">
+                                                Cancel
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h3>No bookings yet</h3>
+                        <p>Start exploring our amazing fleet of vehicles!</p>
+                        <a href="{% url 'vehicles' %}" class="btn btn-primary">Browse Vehicles</a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="sidebar-content">
+                <!-- Quick Actions -->
+                <div class="widget-card">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <a href="{% url 'vehicles' %}" class="action-item">
+                            <i class="fas fa-search"></i>
+                            <span>Find a Vehicle</span>
+                        </a>
+                        <a href="{% url 'profile' %}" class="action-item">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Update Profile</span>
+                        </a>
+                        <a href="{% url 'bookings' %}" class="action-item">
+                            <i class="fas fa-history"></i>
+                            <span>Booking History</span>
+                        </a>
+                        <a href="#" class="action-item">
+                            <i class="fas fa-headset"></i>
+                            <span>Contact Support</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Profile Completion -->
+                <div class="widget-card">
+                    <h3>Profile Completion</h3>
+                    <div class="progress-widget">
+                        <div class="progress-circle">
+                            <div class="progress-fill" data-progress="85"></div>
+                            <div class="progress-text">85%</div>
+                        </div>
+                        <div class="progress-details">
+                            <p>Complete your profile to unlock all features</p>
+                            <a href="{% url 'profile' %}" class="btn btn-outline btn-small">Complete Profile</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Support Widget -->
+                <div class="widget-card">
+                    <h3>Need Help?</h3>
+                    <p>Our support team is available 24/7 to assist you.</p>
+                    <div class="support-contacts">
+                        <a href="tel:+611800285672" class="support-link">
+                            <i class="fas fa-phone"></i>
+                            1800 AURORA
+                        </a>
+                        <a href="mailto:support@auroramotors.com.au" class="support-link">
+                            <i class="fas fa-envelope"></i>
+                            Live Chat
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function cancelBooking(bookingId) {
+    if (confirm('Are you sure you want to cancel this booking?')) {
+        fetch(`/api/booking/${bookingId}/cancel/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                AuroraMotors.showNotification('Booking cancelled successfully', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                AuroraMotors.showNotification(data.error || 'Failed to cancel booking', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Cancel booking error:', error);
+            AuroraMotors.showNotification('An error occurred', 'error');
+        });
+    }
+}
+
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+</script>
+{% endblock %}

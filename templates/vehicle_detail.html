@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ vehicle.display_name }} - Aurora Motors{% endblock %}
+
+{% block content %}
+<!-- Vehicle Hero Section -->
+<section class="vehicle-hero">
+    <div class="container">
+        <div class="vehicle-hero-content">
+            <div class="vehicle-gallery">
+                <div class="main-image">
+                    {% if vehicle.images.first %}
+                        <img src="{{ vehicle.images.first.image.url }}" 
+                             alt="{{ vehicle.display_name }}" id="main-vehicle-image">
+                    {% else %}
+                        <img src="{% static 'images/default-car.jpg' %}" 
+                             alt="{{ vehicle.display_name }}" id="main-vehicle-image">
+                    {% endif %}
+                </div>
+                
+                {% if vehicle.images.count > 1 %}
+                <div class="thumbnail-images">
+                    {% for image in vehicle.images.all %}
+                        <img src="{{ image.image.url }}" 
+                             alt="{{ vehicle.display_name }}"
+                             class="thumbnail {% if forloop.first %}active{% endif %}"
+                             onclick="changeMainImage(this.src)">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="vehicle-info">
+                <div class="vehicle-header">
+                    <h1 class="vehicle-title">{{ vehicle.display_name }}</h1>
+                    <div class="vehicle-category">{{ vehicle.category.name }}</div>
+                </div>
+                
+                <div class="vehicle-rating">
+                    {% if avg_rating %}
+                        <div class="stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= avg_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="rating-value">{{ avg_rating|floatformat:1 }}</span>
+                        <span class="rating-count">({{ recent_reviews.count }} reviews)</span>
+                    {% else %}
+                        <span class="no-rating">No reviews yet</span>
+                    {% endif %}
+                </div>
+                
+                <div class="vehicle-specs-grid">
+                    <div class="spec-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <span class="spec-label">Seats</span>
+                            <span class="spec-value">{{ vehicle.seats }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <i class="fas fa-door-open"></i>
+                        <div>
+                            <span class="spec-label">Doors</span>
+                            <span class="spec-value">{{ vehicle.doors }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <i class="fas fa-cog"></i>
+                        <div>
+                            <span class="spec-label">Transmission</span>
+                            <span class="spec-value">{{ vehicle.get_transmission_display }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <i class="fas fa-gas-pump"></i>
+                        <div>
+                            <span class="spec-label">Fuel</span>
+                            <span class="spec-value">{{ vehicle.get_fuel_type_display }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <i class="fas fa-road"></i>
+                        <div>
+                            <span class="spec-label">Mileage</span>
+                            <span class="spec-value">{{ vehicle.mileage }} km/L</span>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <span class="spec-label">Year</span>
+                            <span class="spec-value">{{ vehicle.year }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vehicle-pricing">
+                    <div class="price-display">
+                        <span class="price">${{ vehicle.price_per_day }}</span>
+                        <span class="period">per day</span>
+                    </div>
+                    <div class="deposit-info">
+                        <span>Security deposit: ${{ vehicle.security_deposit }}</span>
+                    </div>
+                </div>
+                
+                <div class="vehicle-actions">
+                    <a href="{% url 'create_booking' vehicle.id %}" class="btn btn-primary btn-large">
+                        <i class="fas fa-calendar-plus"></i>
+                        Book This Vehicle
+                    </a>
+                    <button class="btn btn-outline btn-large" onclick="shareVehicle()">
+                        <i class="fas fa-share-alt"></i>
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Vehicle Features Section -->
+<section class="vehicle-features-section">
+    <div class="container">
+        <h2 class="section-title">Features & Amenities</h2>
+        
+        <div class="features-grid">
+            {% for feature in vehicle.features %}
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>{{ feature }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section -->
+{% if recent_reviews %}
+<section class="reviews-section">
+    <div class="container">
+        <h2 class="section-title">Customer Reviews</h2>
+        
+        <div class="reviews-grid">
+            {% for review in recent_reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">
+                                <img src="{% static 'images/avatars/default.jpg' %}" 
+                                     alt="{{ review.booking.user.get_full_name }}">
+                            </div>
+                            <div class="reviewer-details">
+                                <h4 class="reviewer-name">{{ review.booking.user.get_full_name }}</h4>
+                                <div class="review-date">{{ review.created_at|date:"M Y" }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="review-content">
+                        <h5 class="review-title">{{ review.title }}</h5>
+                        <p class="review-text">{{ review.comment }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Related Vehicles Section -->
+{% if related_vehicles %}
+<section class="related-vehicles-section">
+    <div class="container">
+        <h2 class="section-title">Similar Vehicles</h2>
+        
+        <div class="vehicles-slider">
+            {% for related_vehicle in related_vehicles %}
+                <div class="vehicle-card">
+                    <div class="vehicle-image">
+                        {% if related_vehicle.images.first %}
+                            <img src="{{ related_vehicle.images.first.image.url }}" 
+                                 alt="{{ related_vehicle.display_name }}">
+                        {% else %}
+                            <img src="{% static 'images/default-car.jpg' %}" 
+                                 alt="{{ related_vehicle.display_name }}">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="vehicle-info">
+                        <h3 class="vehicle-name">{{ related_vehicle.display_name }}</h3>
+                        <div class="vehicle-specs">
+                            <span><i class="fas fa-users"></i> {{ related_vehicle.seats }} seats</span>
+                            <span><i class="fas fa-cog"></i> {{ related_vehicle.get_transmission_display }}</span>
+                        </div>
+                        <div class="vehicle-price">
+                            <span class="price">${{ related_vehicle.price_per_day }}</span>
+                            <span class="period">per day</span>
+                        </div>
+                        <a href="{% url 'vehicle_detail' related_vehicle.id %}" class="btn btn-outline btn-block">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Quick Booking Widget -->
+<div class="quick-booking-widget" id="quick-booking">
+    <div class="widget-content">
+        <h3>Quick Booking</h3>
+        <form id="quick-booking-form">
+            <input type="hidden" name="vehicle_id" value="{{ vehicle.id }}">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Pickup Date</label>
+                    <input type="datetime-local" name="pickup_date" required
+                           value="{{ search_params.pickup_date }}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Return Date</label>
+                    <input type="datetime-local" name="return_date" required
+                           value="{{ search_params.dropoff_date }}">
+                </div>
+            </div>
+            
+            <div class="pricing-summary" id="pricing-summary">
+                <div class="pricing-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Calculating price...</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                Continue to Booking
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeMainImage(src) {
+    document.getElementById('main-vehicle-image').src = src;
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+function shareVehicle() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ vehicle.display_name }} - Aurora Motors',
+            text: 'Check out this amazing {{ vehicle.display_name }} for rent!',
+            url: window.location.href
+        });
+    } else {
+        // Fallback to copy URL
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            AuroraMotors.showNotification('Link copied to clipboard!', 'success');
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize quick booking widget
+    const quickBookingForm = document.getElementById('quick-booking-form');
+    const pricingSummary = document.getElementById('pricing-summary');
+    
+    function updatePricing() {
+        const formData = new FormData(quickBookingForm);
+        const pickupDate = formData.get('pickup_date');
+        const returnDate = formData.get('return_date');
+        
+        if (pickupDate && returnDate) {
+            fetch(`/api/pricing/?vehicle_id={{ vehicle.id }}&start_date=${pickupDate}&end_date=${returnDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        pricingSummary.innerHTML = `
+                            <div class="pricing-details">
+                                <div class="pricing-row">
+                                    <span>Daily Rate:</span>
+                                    <span>$${data.daily_rate}</span>
+                                </div>
+                                <div class="pricing-row">
+                                    <span>Days:</span>
+                                    <span>${data.total_days}</span>
+                                </div>
+                                <div class="pricing-row">
+                                    <span>Subtotal:</span>
+                                    <span>$${data.subtotal}</span>
+                                </div>
+                                <div class="pricing-row">
+                                    <span>Security Deposit:</span>
+                                    <span>$${data.security_deposit}</span>
+                                </div>
+                                <div class="pricing-row total">
+                                    <span><strong>Total:</strong></span>
+                                    <span><strong>$${data.total_amount}</strong></span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Pricing error:', error);
+                });
+        }
+    }
+    
+    quickBookingForm.addEventListener('change', updatePricing);
+    quickBookingForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Store form data and redirect to booking
+        const formData = new FormData(this);
+        const params = new URLSearchParams();
+        
+        for (let [key, value] of formData.entries()) {
+            if (value) params.append(key, value);
+        }
+        
+        window.location.href = `/book/{{ vehicle.id }}/?${params.toString()}`;
+    });
+    
+    // Initial pricing calculation if dates are pre-filled
+    updatePricing();
+    
+    // Sticky quick booking widget
+    const widget = document.getElementById('quick-booking');
+    const vehicleInfo = document.querySelector('.vehicle-info');
+    
+    window.addEventListener('scroll', function() {
+        const vehicleInfoRect = vehicleInfo.getBoundingClientRect();
+        
+        if (vehicleInfoRect.bottom < 0) {
+            widget.classList.add('sticky');
+        } else {
+            widget.classList.remove('sticky');
+        }
+    });
+});
+</script>
+{% endblock %}

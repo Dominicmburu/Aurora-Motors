@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book {{ vehicle.display_name }} - Aurora Motors{% endblock %}
+
+{% block content %}
+<!-- Booking Header -->
+<section class="booking-header">
+    <div class="container">
+        <div class="booking-progress">
+            <div class="progress-step active">
+                <div class="step-number">1</div>
+                <span>Vehicle Details</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">2</div>
+                <span>Rental Information</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">3</div>
+                <span>Payment</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">4</div>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Content -->
+<section class="booking-content">
+    <div class="container">
+        <div class="booking-layout">
+            <!-- Main Booking Form -->
+            <div class="booking-main">
+                <div class="booking-card">
+                    <h2 class="card-title">Rental Details</h2>
+                    
+                    <form method="post" class="booking-form" id="booking-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-section">
+                            <h3 class="section-title">Rental Period</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    {{ form.start_date.label_tag }}
+                                    {{ form.start_date }}
+                                    {% if form.start_date.errors %}
+                                        <div class="error-message">{{ form.start_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ form.end_date.label_tag }}
+                                    {{ form.end_date }}
+                                    {% if form.end_date.errors %}
+                                        <div class="error-message">{{ form.end_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3 class="section-title">Pickup & Return Locations</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    {{ form.pickup_location.label_tag }}
+                                    {{ form.pickup_location }}
+                                    {% if form.pickup_location.errors %}
+                                        <div class="error-message">{{ form.pickup_location.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ form.dropoff_location.label_tag }}
+                                    {{ form.dropoff_location }}
+                                    {% if form.dropoff_location.errors %}
+                                        <div class="error-message">{{ form.dropoff_location.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="same-location">
+                                    <span class="checkmark"></span>
+                                    Return to same location
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3 class="section-title">Additional Information</h3>
+                            
+                            <div class="form-group">
+                                {{ form.special_requests.label_tag }}
+                                {{ form.special_requests }}
+                                {% if form.special_requests.errors %}
+                                    <div class="error-message">{{ form.special_requests.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-outline">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to Vehicle
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Continue to Payment
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Booking Summary -->
+            <div class="booking-sidebar">
+                <div class="summary-card">
+                    <h3 class="card-title">Booking Summary</h3>
+                    
+                    <div class="vehicle-summary">
+                        <div class="vehicle-image">
+                            {% if vehicle.images.first %}
+                                <img src="{{ vehicle.images.first.image.url }}" alt="{{ vehicle.display_name }}">
+                            {% else %}
+                                <img src="{% static 'images/default-car.jpg' %}" alt="{{ vehicle.display_name }}">
+                            {% endif %}
+                        </div>
+                        
+                        <div class="vehicle-details">
+                            <h4 class="vehicle-name">{{ vehicle.display_name }}</h4>
+                            <div class="vehicle-category">{{ vehicle.category.name }}</div>
+                            
+                            <div class="vehicle-specs">
+                                <span><i class="fas fa-users"></i> {{ vehicle.seats }} seats</span>
+                                <span><i class="fas fa-cog"></i> {{ vehicle.get_transmission_display }}</span>
+                                <span><i class="fas fa-gas-pump"></i> {{ vehicle.get_fuel_type_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-breakdown" id="pricing-breakdown">
+                        <div class="pricing-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Calculating price...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rental-terms">
+                        <h4>Important Terms</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Free cancellation up to 48 hours</li>
+                            <li><i class="fas fa-check"></i> Comprehensive insurance included</li>
+                            <li><i class="fas fa-check"></i> 24/7 roadside assistance</li>
+                            <li><i class="fas fa-check"></i> Full tank pickup & return</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="contact-card">
+                    <h4>Need Help?</h4>
+                    <p>Our customer service team is here to assist you.</p>
+                    <div class="contact-info">
+                        <a href="tel:+611800285672" class="contact-link">
+                            <i class="fas fa-phone"></i>
+                            1800 AURORA
+                        </a>
+                        <a href="mailto:support@auroramotors.com.au" class="contact-link">
+                            <i class="fas fa-envelope"></i>
+                            support@auroramotors.com.au
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('booking-form');
+    const pricingBreakdown = document.getElementById('pricing-breakdown');
+    const sameLocationCheckbox = document.getElementById('same-location');
+    const pickupLocation = document.querySelector('[name="pickup_location"]');
+    const dropoffLocation = document.querySelector('[name="dropoff_location"]');
+    
+    // Same location functionality
+    sameLocationCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            dropoffLocation.value = pickupLocation.value;
+            dropoffLocation.disabled = true;
+        } else {
+            dropoffLocation.disabled = false;
+        }
+    });
+    
+    pickupLocation.addEventListener('change', function() {
+        if (sameLocationCheckbox.checked) {
+            dropoffLocation.value = this.value;
+        }
+        updatePricing();
+    });
+    
+    // Real-time pricing updates
+    function updatePricing() {
+        const formData = new FormData(form);
+        const startDate = formData.get('start_date');
+        const endDate = formData.get('end_date');
+        
+        if (startDate && endDate) {
+            fetch(`/api/pricing/?vehicle_id={{ vehicle.id }}&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        pricingBreakdown.innerHTML = `
+                            <div class="pricing-details">
+                                <div class="pricing-row">
+                                    <span>Daily Rate</span>
+                                    <span>$${data.daily_rate}</span>
+                                </div>
+                                <div class="pricing-row">
+                                    <span>Number of Days</span>
+                                    <span>${data.total_days}</span>
+                                </div>
+                                <div class="pricing-row">
+                                    <span>Subtotal</span>
+                                    <span>$${data.subtotal}</span>
+                                </div>
+                                <div class="pricing-row">
+                                    <span>Security Deposit</span>
+                                    <span>$${data.security_deposit}</span>
+                                </div>
+                                <div class="pricing-divider"></div>
+                                <div class="pricing-row total">
+                                    <span><strong>Total Amount</strong></span>
+                                    <span><strong>$${data.total_amount}</strong></span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => console.error('Pricing error:', error));
+        }
+    }
+    
+    // Update pricing on form changes
+    form.addEventListener('change', updatePricing);
+    
+    // Initial pricing calculation
+    updatePricing();
+});
+</script>
+{% endblock %}

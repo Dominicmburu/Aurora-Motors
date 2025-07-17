@@ -1,0 +1,72 @@
+<div class="vehicle-card">
+    <div class="vehicle-image">
+        {% if vehicle.images.first %}
+            <img src="{{ vehicle.images.first.image.url }}" 
+                 alt="{{ vehicle.display_name }}" loading="lazy">
+        {% else %}
+            <img src="{% static 'images/default-car.jpg' %}" 
+                 alt="{{ vehicle.display_name }}" loading="lazy">
+        {% endif %}
+        
+        <div class="vehicle-badge">{{ vehicle.category.name }}</div>
+        
+        <div class="vehicle-overlay">
+            <div class="overlay-actions">
+                <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-outline btn-small">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+                <a href="{% url 'create_booking' vehicle.id %}" class="btn btn-primary btn-small">
+                    <i class="fas fa-calendar-plus"></i> Book Now
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="vehicle-info">
+        <h3 class="vehicle-name">{{ vehicle.display_name }}</h3>
+        
+        <div class="vehicle-specs">
+            <div class="spec-item">
+                <i class="fas fa-users"></i>
+                <span>{{ vehicle.seats }} seats</span>
+            </div>
+            <div class="spec-item">
+                <i class="fas fa-cog"></i>
+                <span>{{ vehicle.get_transmission_display }}</span>
+            </div>
+            <div class="spec-item">
+                <i class="fas fa-gas-pump"></i>
+                <span>{{ vehicle.get_fuel_type_display }}</span>
+            </div>
+            <div class="spec-item">
+                <i class="fas fa-road"></i>
+                <span>{{ vehicle.mileage }} km/L</span>
+            </div>
+        </div>
+        
+        <div class="vehicle-features">
+            {% for feature in vehicle.features|slice:":3" %}
+                <span class="feature-tag">{{ feature }}</span>
+            {% endfor %}
+            {% if vehicle.features|length > 3 %}
+                <span class="feature-tag">+{{ vehicle.features|length|add:"-3" }} more</span>
+            {% endif %}
+        </div>
+        
+        <div class="vehicle-pricing">
+            <div class="price">
+                <span class="amount">${{ vehicle.price_per_day }}</span>
+                <span class="period">per day</span>
+            </div>
+            <div class="deposit">
+                <span>Security deposit: ${{ vehicle.security_deposit }}</span>
+            </div>
+        </div>
+        
+        <div class="vehicle-actions">
+            <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-outline btn-block">
+                View Details
+            </a>
+        </div>
+    </div>
+</div>

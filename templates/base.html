@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aurora Motors - Premium Car Rental{% endblock %}</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="{% block description %}Premium car rental services with modern vehicles, competitive prices, and exceptional customer service.{% endblock %}">
+    <meta name="keywords" content="car rental, vehicle hire, Aurora Motors, premium cars">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'css/animations.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="aurora-logo">
+                <i class="fas fa-car"></i>
+                <span>Aurora Motors</span>
+            </div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="{% url 'home' %}" class="brand-link">
+                        <div class="brand-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="brand-text">
+                            <span class="brand-name">Aurora</span>
+                            <span class="brand-subtitle">Motors</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="nav-menu" id="nav-menu">
+                    <div class="nav-list">
+                        <a href="{% url 'home' %}" class="nav-link">Home</a>
+                        <a href="{% url 'vehicles' %}" class="nav-link">Vehicles</a>
+                        <a href="{% url 'locations' %}" class="nav-link">Locations</a>
+                        <a href="#about" class="nav-link">About</a>
+                        <a href="#contact" class="nav-link">Contact</a>
+                    </div>
+                    
+                    <div class="nav-actions">
+                        {% if user.is_authenticated %}
+                            <div class="user-menu">
+                                <button class="user-menu-toggle">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>{{ user.first_name|default:user.username }}</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="user-dropdown">
+                                    <a href="{% url 'dashboard' %}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                                    </a>
+                                    <a href="{% url 'bookings' %}" class="dropdown-item">
+                                        <i class="fas fa-calendar-alt"></i> My Bookings
+                                    </a>
+                                    <a href="{% url 'profile' %}" class="dropdown-item">
+                                        <i class="fas fa-user-cog"></i> Profile
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'logout' %}" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                            <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <div class="brand-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="brand-text">
+                            <span class="brand-name">Aurora Motors</span>
+                            <span class="brand-subtitle">Premium Car Rental</span>
+                        </div>
+                    </div>
+                    <p class="footer-description">
+                        Experience premium car rental services with our modern fleet, 
+                        competitive pricing, and exceptional customer support.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'vehicles' %}">Our Fleet</a></li>
+                        <li><a href="{% url 'locations' %}">Locations</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Economy Cars</a></li>
+                        <li><a href="#">Luxury Vehicles</a></li>
+                        <li><a href="#">Long-term Rental</a></li>
+                        <li><a href="#">Corporate Solutions</a></li>
+                        <li><a href="#">Insurance Coverage</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Contact Info</h4>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+61 1800 AURORA</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@auroramotors.com.au</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Sydney, Melbourne, Brisbane</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>24/7 Customer Support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 Aurora Motors Pty Ltd. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#privacy">Privacy Policy</a>
+                        <a href="#terms">Terms of Service</a>
+                        <a href="#sitemap">Sitemap</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/animations.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Aurora Motors - Premium Car Rental Australia{% endblock %}
+
+{% block extra_css %}
+<!-- AOS Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" id="hero">
+    <div class="hero-background">
+        <div class="hero-video">
+            <video autoplay muted loop>
+                <source src="{% static 'videos/hero-video.mp4' %}" type="video/mp4">
+            </video>
+        </div>
+        <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text" data-aos="fade-up">
+                <h1 class="hero-title">
+                    <span class="title-line">Premium Car Rental</span>
+                    <span class="title-line accent">Experience</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Discover Australia with our premium fleet of modern vehicles. 
+                    From economy to luxury, we have the perfect car for your journey.
+                </p>
+                <div class="hero-actions">
+                    <a href="#booking-form" class="btn btn-primary btn-large">
+                        <i class="fas fa-car"></i>
+                        Book Now
+                    </a>
+                    <a href="{% url 'vehicles' %}" class="btn btn-outline btn-large">
+                        <i class="fas fa-eye"></i>
+                        View Fleet
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hero-stats" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="500">0</div>
+                    <div class="stat-label">Premium Vehicles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="50000">0</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="15">0</div>
+                    <div class="stat-label">Locations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="24">0</div>
+                    <div class="stat-label">Hour Support</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hero-scroll">
+        <a href="#booking-form" class="scroll-indicator">
+            <span>Scroll for booking</span>
+            <i class="fas fa-arrow-down"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Booking Form Section -->
+<section class="booking-section" id="booking-form">
+    <div class="container">
+        <div class="booking-card" data-aos="zoom-in">
+            <div class="booking-header">
+                <h2 class="booking-title">Find Your Perfect Car</h2>
+                <p class="booking-subtitle">Quick and easy booking in just a few steps</p>
+            </div>
+            
+            <form class="booking-form" id="vehicle-search-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pickup-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Pickup Location
+                        </label>
+                        <select id="pickup-location" name="pickup_location" required>
+                            <option value="">Select pickup location</option>
+                            {% for location in locations %}
+                                <option value="{{ location.id }}">{{ location.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dropoff-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Drop-off Location
+                        </label>
+                        <select id="dropoff-location" name="dropoff_location" required>
+                            <option value="">Select drop-off location</option>
+                            {% for location in locations %}
+                                <option value="{{ location.id }}">{{ location.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pickup-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            Pickup Date & Time
+                        </label>
+                        <input type="datetime-local" id="pickup-date" name="pickup_date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dropoff-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            Drop-off Date & Time
+                        </label>
+                        <input type="datetime-local" id="dropoff-date" name="dropoff_date" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vehicle-type">
+                            <i class="fas fa-car"></i>
+                            Vehicle Type
+                        </label>
+                        <select id="vehicle-type" name="vehicle_type">
+                            <option value="">Any type</option>
+                            {% for category in vehicle_categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-search"></i>
+                            Search Available Cars
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Vehicle Categories -->
+<section class="categories-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Choose Your Vehicle Type</h2>
+            <p class="section-subtitle">From economy to luxury, we have the perfect car for every journey</p>
+        </div>
+        
+        <div class="categories-grid">
+            {% for category in vehicle_categories %}
+            <div class="category-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="category-icon">
+                    <i class="{{ category.icon }}"></i>
+                </div>
+                <h3 class="category-name">{{ category.name }}</h3>
+                <p class="category-description">{{ category.description }}</p>
+                <div class="category-features">
+                    <span class="feature-tag">From $49/day</span>
+                    <span class="feature-tag">Available 24/7</span>
+                </div>
+                <a href="{% url 'vehicles' %}?category={{ category.id }}" class="category-link">
+                    <span>Explore {{ category.name }}</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Vehicles -->
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Featured Vehicles</h2>
+            <p class="section-subtitle">Our most popular and highly-rated vehicles</p>
+        </div>
+        
+        <div class="vehicles-slider" data-aos="fade-up" data-aos-delay="200">
+            <div class="vehicles-grid">
+                {% for vehicle in featured_vehicles %}
+                <div class="vehicle-card">
+                    <div class="vehicle-image">
+                        <img src="{{ vehicle.images.first.image.url }}" alt="{{ vehicle.display_name }}">
+                        <div class="vehicle-badge">Featured</div>
+                    </div>
+                    <div class="vehicle-info">
+                        <h3 class="vehicle-name">{{ vehicle.display_name }}</h3>
+                        <div class="vehicle-specs">
+                            <span class="spec"><i class="fas fa-users"></i> {{ vehicle.seats }} seats</span>
+                            <span class="spec"><i class="fas fa-cog"></i> {{ vehicle.get_transmission_display }}</span>
+                            <span class="spec"><i class="fas fa-gas-pump"></i> {{ vehicle.get_fuel_type_display }}</span>
+                        </div>
+                        <div class="vehicle-price">
+                            <span class="price">${{ vehicle.price_per_day }}</span>
+                            <span class="period">per day</span>
+                        </div>
+                        <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-primary btn-block">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Aurora -->
+<section class="features-section">
+    <div class="container">
+        <div class="features-content">
+            <div class="features-text" data-aos="fade-right">
+                <h2 class="section-title">Why Choose Aurora Motors?</h2>
+                <p class="section-subtitle">
+                    We're committed to providing the best car rental experience in Australia
+                </p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Fully Insured</h4>
+                            <p>Comprehensive insurance coverage on all our vehicles for your peace of mind.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>24/7 Support</h4>
+                            <p>Round-the-clock customer support and roadside assistance wherever you are.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Premium Fleet</h4>
+                            <p>Modern, well-maintained vehicles from top brands with the latest features.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Best Prices</h4>
+                            <p>Competitive pricing with no hidden fees and flexible payment options.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-visual" data-aos="fade-left">
+                <div class="visual-card">
+                    <img src="{% static 'images/premium-service.jpg' %}" alt="Premium Service">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Customer Testimonials -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <p class="section-subtitle">Real experiences from our valued customers</p>
+        </div>
+        
+        <div class="testimonials-slider" data-aos="fade-up" data-aos-delay="200">
+            {% for review in featured_reviews %}
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <div class="rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <h4 class="testimonial-title">{{ review.title }}</h4>
+                    <p class="testimonial-text">{{ review.comment }}</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <img src="{% static 'images/avatars/default.jpg' %}" alt="{{ review.booking.user.get_full_name }}">
+                    </div>
+                    <div class="author-info">
+                        <h5 class="author-name">{{ review.booking.user.get_full_name }}</h5>
+                        <p class="author-location">{{ review.booking.pickup_location }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Locations -->
+<section class="locations-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Our Locations</h2>
+            <p class="section-subtitle">Convenient pickup and drop-off locations across Australia</p>
+        </div>
+        
+        <div class="locations-grid">
+            {% for location in locations %}
+            <div class="location-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="location-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3 class="location-name">{{ location.name }}</h3>
+                <p class="location-address">{{ location.address }}</p>
+                <div class="location-contact">
+                    <span><i class="fas fa-phone"></i> {{ location.phone }}</span>
+                </div>
+                <div class="location-hours">
+                    <span><i class="fas fa-clock"></i> Open 24/7</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="{% static 'js/booking.js' %}"></script>
+<script>
+// Initialize AOS (Animate On Scroll)
+AOS.init({
+    duration: 800,
+    easing: 'ease-in-out',
+    once: true
+});
+
+// Counter animation for hero stats
+const counters = document.querySelectorAll('[data-count]');
+const animateCounters = () => {
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const count = parseInt(counter.innerText);
+        const increment = target / 100;
+        
+        if (count < target) {
+            counter.innerText = Math.ceil(count + increment);
+            setTimeout(animateCounters, 20);
+        } else {
+            counter.innerText = target.toLocaleString();
+        }
+    });
+};
+
+// Trigger counter animation when hero section is in view
+const heroSection = document.getElementById('hero');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateCounters();
+            observer.unobserve(entry.target);
+        }
+    });
+});
+observer.observe(heroSection);
+</script>
+{% endblock %}

@@ -1,0 +1,63 @@
+<header class="header" id="header">
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{% url 'home' %}" class="brand-link">
+                    <div class="brand-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">Aurora</span>
+                        <span class="brand-subtitle">Motors</span>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <div class="nav-list">
+                    <a href="{% url 'home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'vehicles' %}" class="nav-link">Vehicles</a>
+                    <a href="{% url 'locations' %}" class="nav-link">Locations</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+                
+                <div class="nav-actions">
+                    {% if user.is_authenticated %}
+                        <div class="user-menu">
+                            <button class="user-menu-toggle">
+                                <i class="fas fa-user-circle"></i>
+                                <span>{{ user.first_name|default:user.username }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="user-dropdown">
+                                <a href="{% url 'dashboard' %}" class="dropdown-item">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                                <a href="{% url 'bookings' %}" class="dropdown-item">
+                                    <i class="fas fa-calendar-alt"></i> My Bookings
+                                </a>
+                                <a href="{% url 'profile' %}" class="dropdown-item">
+                                    <i class="fas fa-user-cog"></i> Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                        <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+</header>
